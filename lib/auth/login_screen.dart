@@ -7,6 +7,7 @@ import 'package:medicare/models/user_model.dart';
 import 'package:medicare/screens/patients/patient_dashboard.dart';
 import 'package:medicare/screens/doctors/doctor_dashboard.dart';
 import 'package:medicare/screens/admins/admin_dashboard.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // login_screen.dart
 class LoginScreen extends StatefulWidget {
@@ -79,19 +80,30 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Function to fetch user role from Firestore or another data source
   Future<String> _getUserRole(String userId) async {
-    // For now, let's assume roles are stored in Firestore
-    // You can replace this with your actual Firestore query or other logic
-    // Example Firestore query (replace with actual Firestore implementation):
-    // DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    // return userDoc['role'];
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users') // Ambil data dari koleksi 'users'
+          .doc(userId)
+          .get();
 
-    // For demonstration, returning a role based on userId (you can replace with your logic)
-    if (userId == 'doctorId') {
-      return 'doctor';
-    } else if (userId == 'adminId') {
-      return 'admin';
-    } else {
-      return 'patient';
+      if (userDoc.exists) {
+        String role = userDoc['role']; // Ambil role dari Firestore
+
+        // Validasi role agar tidak ada nilai aneh
+        if (role == 'admin' || role == 'doctor' || role == 'patient') {
+          print('User $userId logged in as: $role'); // Debugging
+          return role;
+        } else {
+          print('User $userId has an invalid role: $role');
+          return 'patient'; // Default jika role tidak valid
+        }
+      } else {
+        print('User $userId not found in Firestore.');
+        return 'patient'; // Jika user tidak ditemukan
+      }
+    } catch (e) {
+      print('Error fetching user role: $e');
+      return 'patient'; // Jika ada error, default ke 'patient'
     }
   }
 

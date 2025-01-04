@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:medicare/widgets/custom_button.dart';
 import 'package:medicare/widgets/custom_textfield.dart';
+import 'package:medicare/models/user_model.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -29,8 +31,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: passwordController.text.trim(),
       );
 
-      // You can also store additional user data (like name) in Firestore here
-      // Example: FirebaseFirestore.instance.collection('users').add({...})
+      // Create UserModel instance
+      UserModel newUser = UserModel(
+        uid: userCredential.user!.uid, // UID from Firebase Auth
+        name: nameController.text.trim(),
+        email: emailController.text.trim(),
+        role: 'patient', // Default role set to 'patient'
+      );
+
+      // Save additional user data (like name, email, and role) to Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set(newUser.toMap());
 
       // Show success and navigate to the next screen
       ScaffoldMessenger.of(context).showSnackBar(

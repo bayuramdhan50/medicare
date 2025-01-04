@@ -27,7 +27,8 @@ class AdminDashboard extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddDoctorScreen(user: user),
+                    builder: (context) =>
+                        AddDoctorScreen(), // Tanpa parameter user
                   ),
                 );
               },
