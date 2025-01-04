@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:medicare/models/user_model.dart';
 import 'package:medicare/widgets/custom_button.dart';
@@ -7,27 +8,7 @@ class PrescriptionScreen extends StatelessWidget {
 
   PrescriptionScreen({required this.user});
 
-  // Sample prescription data
-  final List<Map<String, String>> prescriptions = [
-    {
-      'medicine': 'Paracetamol',
-      'dose': '500mg',
-      'instructions': 'Take one tablet every 6 hours.',
-      'date': '2024-12-01',
-    },
-    {
-      'medicine': 'Amoxicillin',
-      'dose': '250mg',
-      'instructions': 'Take one tablet twice a day for 7 days.',
-      'date': '2024-12-05',
-    },
-    {
-      'medicine': 'Ibuprofen',
-      'dose': '200mg',
-      'instructions': 'Take one tablet every 8 hours as needed.',
-      'date': '2024-12-10',
-    },
-  ];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -49,56 +30,76 @@ class PrescriptionScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            // List of prescriptions
+            // Mengambil data resep dari Firestore
             Expanded(
-              child: ListView.builder(
-                itemCount: prescriptions.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    margin: EdgeInsets.only(bottom: 10),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            'Medicine: ${prescriptions[index]['medicine']}',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _firestore
+                    .collection('prescriptions')
+                    .where('patientId',
+                        isEqualTo: user.uid) // Hanya mengambil resep pasien ini
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Center(child: Text('No prescriptions available.'));
+                  }
+
+                  final prescriptions = snapshot.data!.docs;
+                  return ListView.builder(
+                    itemCount: prescriptions.length,
+                    itemBuilder: (context, index) {
+                      final prescription =
+                          prescriptions[index].data() as Map<String, dynamic>;
+                      return Card(
+                        margin: EdgeInsets.only(bottom: 10),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                'Medicine: ${prescription['medicine']}',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Dose: ${prescription['dose']}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Instructions: ${prescription['instructions']}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Date: ${prescription['date']}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              CustomButton(
+                                text: 'View Prescription Details',
+                                onPressed: () {
+                                  // Add functionality to view prescription details
+                                },
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Dose: ${prescriptions[index]['dose']}',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Instructions: ${prescriptions[index]['instructions']}',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Date: ${prescriptions[index]['date']}',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                          SizedBox(height: 16),
-                          CustomButton(
-                            text: 'View Prescription Details',
-                            onPressed: () {
-                              // Add functionality to view prescription details
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),

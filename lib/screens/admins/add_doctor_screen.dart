@@ -14,8 +14,15 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
+  final TextEditingController healthStatusController = TextEditingController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String selectedGender = 'Male'; // Default gender value
+
+  // List of gender options
+  List<String> genderOptions = ['Male', 'Female', 'Other'];
 
   Future<void> addDoctor() async {
     try {
@@ -23,16 +30,19 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
-        password: passwordController.text
-            .trim(), // Password harus diberikan oleh admin
+        password: passwordController.text.trim(),
       );
 
-      // Buat objek dokter dengan role 'doctor'
+      // Buat objek dokter dengan role 'doctor' dan atribut tambahan
       UserModel newDoctor = UserModel(
         uid: userCredential.user!.uid,
         name: nameController.text.trim(),
         email: emailController.text.trim(),
         role: 'doctor', // Role dokter
+        age: int.parse(ageController.text.trim()), // Mengambil usia dari input
+        gender: selectedGender, // Mengambil gender dari dropdown
+        healthStatus: healthStatusController.text
+            .trim(), // Mengambil status kesehatan dari input
       );
 
       // Simpan informasi dokter ke Firestore
@@ -50,6 +60,8 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
       nameController.clear();
       emailController.clear();
       passwordController.clear();
+      ageController.clear();
+      healthStatusController.clear();
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'Failed to add doctor';
       if (e.code == 'weak-password') {
@@ -89,6 +101,28 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
               controller: passwordController,
               decoration: InputDecoration(labelText: 'Password'),
               obscureText: true,
+            ),
+            TextField(
+              controller: ageController,
+              decoration: InputDecoration(labelText: 'Age'),
+              keyboardType: TextInputType.number,
+            ),
+            // Dropdown for gender selection
+            DropdownButtonFormField<String>(
+              value: selectedGender,
+              decoration: InputDecoration(labelText: 'Gender'),
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedGender = newValue!;
+                });
+              },
+              items: genderOptions
+                  .map<DropdownMenuItem<String>>(
+                      (String value) => DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          ))
+                  .toList(),
             ),
             SizedBox(height: 20),
             ElevatedButton(

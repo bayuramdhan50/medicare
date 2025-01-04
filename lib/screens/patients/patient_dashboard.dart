@@ -5,7 +5,6 @@ import 'package:medicare/screens/patients/medical_records_screen.dart';
 import 'package:medicare/screens/patients/prescription_screen.dart';
 import 'package:medicare/screens/patients/lab_result_screen.dart';
 import 'package:medicare/screens/patients/find_hospital_screen.dart';
-import 'package:medicare/screens/patients/appointment_screen.dart'; // Import AppointmentScreen
 import 'package:medicare/widgets/custom_button.dart';
 import 'package:medicare/models/user_model.dart';
 
@@ -91,16 +90,6 @@ class PatientDashboard extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => FindHospitalScreen(user: user)),
-                );
-              },
-            ),
-            CustomButton(
-              text: 'Appointments', // Button to navigate to AppointmentScreen
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AppointmentScreen(user: user)),
                 );
               },
             ),
