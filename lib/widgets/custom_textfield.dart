@@ -4,24 +4,27 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatelessWidget {
   final String label;
   final bool isPassword;
-  final TextEditingController? controller; // Add controller parameter
+  final TextEditingController controller;
+  final Icon? prefixIcon;
 
   const CustomTextField({
-    super.key,
+    Key? key,
     required this.label,
     this.isPassword = false,
-    this.controller, // Make controller optional
-  });
+    required this.controller,
+    this.prefixIcon,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: TextField(
-        controller: controller, // Assign controller to TextField
+        controller: controller,
         obscureText: isPassword,
         decoration: InputDecoration(
           labelText: label,
+          prefixIcon: prefixIcon,
           border: OutlineInputBorder(),
         ),
       ),

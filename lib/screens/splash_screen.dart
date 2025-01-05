@@ -25,19 +25,15 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.local_hospital, size: 100, color: Colors.white),
-            SizedBox(height: 20),
-            Text(
-              "HealthMate",
-              style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+            Image.asset(
+              'images/logo.png',
+              width: 270,
+              height: 270,
             ),
           ],
         ),

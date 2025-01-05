@@ -60,44 +60,143 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } else if (e.code == 'email-already-in-use') {
         message = 'The account already exists for that email';
       }
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
+      }
     } catch (e) {
       // Catch other errors
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('An error occurred')));
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('An error occurred')));
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Register")),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CustomTextField(
-              label: "Name",
-              controller: nameController,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color.fromARGB(255, 255, 255, 255),
+              Color(0xFF08A8B1).withOpacity(0.8),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Tombol kembali
+                IconButton(
+                  icon: Icon(Icons.arrow_back,
+                      color: const Color.fromARGB(255, 8, 4, 1)),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                SizedBox(height: 2),
+                Center(
+                  child: Image.asset(
+                    'images/logo.png',
+                    height: 200,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "Daftar Akun",
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFF19E23),
+                  ),
+                ),
+                SizedBox(height: 1),
+                Text(
+                  "Silakan lengkapi data diri Anda",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFFF19E23),
+                  ),
+                ),
+                SizedBox(height: 15),
+                Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      CustomTextField(
+                        label: "Nama Lengkap",
+                        controller: nameController,
+                        prefixIcon: Icon(Icons.person_outline),
+                      ),
+                      SizedBox(height: 20),
+                      CustomTextField(
+                        label: "Email",
+                        controller: emailController,
+                        prefixIcon: Icon(Icons.email_outlined),
+                      ),
+                      SizedBox(height: 20),
+                      CustomTextField(
+                        label: "Password",
+                        isPassword: true,
+                        controller: passwordController,
+                        prefixIcon: Icon(Icons.lock_outline),
+                      ),
+                      SizedBox(height: 30),
+                      CustomButton(
+                        text: "Daftar",
+                        onPressed: () => registerUser(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFF19E23),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 13, horizontal: 23),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 30),
+                Center(
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: RichText(
+                      text: TextSpan(
+                        text: "Sudah punya akun? ",
+                        style: TextStyle(color: Colors.white70),
+                        children: [
+                          TextSpan(
+                            text: "Masuk",
+                            style: TextStyle(
+                              color: Color(0xFFF19E23),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            CustomTextField(
-              label: "Email",
-              controller: emailController,
-            ),
-            CustomTextField(
-              label: "Password",
-              isPassword: true,
-              controller: passwordController,
-            ),
-            SizedBox(height: 20),
-            CustomButton(
-              text: "Register",
-              onPressed: () {
-                registerUser();
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );
