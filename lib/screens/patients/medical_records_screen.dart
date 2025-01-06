@@ -1,12 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:medicare/models/user_model.dart';
-import 'package:medicare/widgets/custom_button.dart';
 
 class MedicalRecordsScreen extends StatelessWidget {
   final UserModel user;
 
   MedicalRecordsScreen({required this.user});
+
+  // Function to fetch doctor's name based on doctorId
+  Future<String> getDoctorName(String doctorUid) async {
+    try {
+      var docSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('role', isEqualTo: 'doctor')
+          .where('uid', isEqualTo: doctorUid)
+          .limit(1)
+          .get();
+
+      if (docSnapshot.docs.isNotEmpty) {
+        return docSnapshot.docs.first.data()['name'] ?? 'Unknown Doctor';
+      } else {
+        return 'Unknown Doctor';
+      }
+    } catch (e) {
+      return 'Unknown Doctor';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +53,7 @@ class MedicalRecordsScreen extends StatelessWidget {
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: _firestore
-                    .collection('medical_records')
+                    .collection('medicalRecords') // Update collection name
                     .where('patientId',
                         isEqualTo: user.uid) // Filter by patientId
                     .snapshots(),
@@ -60,9 +79,13 @@ class MedicalRecordsScreen extends StatelessWidget {
                           records[index].data() as Map<String, dynamic>;
 
                       // Retrieve medical record fields
-                      String disease = record['disease'] ?? 'Not specified';
                       String date = record['date'] ?? 'Not specified';
-                      String status = record['status'] ?? 'Not specified';
+                      String diagnosis = record['diagnosis'] ?? 'Not specified';
+                      String treatment = record['treatment'] ?? 'Not specified';
+                      String notes = record['notes'] ?? 'Not specified';
+                      String doctorId = record['doctorId'] ?? 'Not specified';
+                      String patientName =
+                          record['patientName'] ?? 'Not specified';
 
                       return Card(
                         margin: EdgeInsets.only(bottom: 10),
@@ -72,10 +95,24 @@ class MedicalRecordsScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                'Disease: $disease',
+                                'Patient: $patientName',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Diagnosis: $diagnosis',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Treatment: $treatment',
+                                style: TextStyle(
+                                  fontSize: 16,
                                 ),
                               ),
                               SizedBox(height: 8),
@@ -87,18 +124,43 @@ class MedicalRecordsScreen extends StatelessWidget {
                               ),
                               SizedBox(height: 8),
                               Text(
-                                'Status: $status',
+                                'Notes: $notes',
                                 style: TextStyle(
                                   fontSize: 16,
                                 ),
                               ),
-                              SizedBox(height: 16),
-                              CustomButton(
-                                text: 'View Details',
-                                onPressed: () {
-                                  // Add functionality to view detailed medical records
+                              SizedBox(height: 8),
+                              // Fetching doctor's name
+                              FutureBuilder<String>(
+                                future: getDoctorName(doctorId),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  }
+
+                                  if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  }
+
+                                  if (snapshot.hasData) {
+                                    return Text(
+                                      'Doctor: ${snapshot.data}',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                    );
+                                  } else {
+                                    return Text(
+                                      'Doctor: Not specified',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                    );
+                                  }
                                 },
                               ),
+                              SizedBox(height: 16),
                             ],
                           ),
                         ),
