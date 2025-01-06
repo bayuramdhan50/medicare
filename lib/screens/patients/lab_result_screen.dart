@@ -9,6 +9,25 @@ class LabResultScreen extends StatelessWidget {
 
   LabResultScreen({required this.user});
 
+  Future<String> getDoctorName(String doctorUid) async {
+    try {
+      var docSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('role', isEqualTo: 'doctor')
+          .where('uid', isEqualTo: doctorUid)
+          .limit(1)
+          .get();
+
+      if (docSnapshot.docs.isNotEmpty) {
+        return docSnapshot.docs.first.data()['name'] ?? 'Unknown Doctor';
+      } else {
+        return 'Unknown Doctor';
+      }
+    } catch (e) {
+      return 'Unknown Doctor';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,13 +45,11 @@ class LabResultScreen extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
-            // StreamBuilder untuk update real-time
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('lab_results')
-                    .where('patientId',
-                        isEqualTo: user.uid) // Filter data pasien
+                    .where('patientId', isEqualTo: user.uid)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -55,57 +72,76 @@ class LabResultScreen extends StatelessWidget {
                       var labResult =
                           labResults[index].data() as Map<String, dynamic>;
 
-                      return Card(
-                        margin: EdgeInsets.only(bottom: 10),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                labResult['testName'] ?? 'Unknown Test',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Date: ${labResult['date'] ?? '-'}',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Result: ${labResult['result'] ?? 'Pending'}',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Status: ${labResult['status'] ?? 'Pending'}', // Tambah status
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: labResult['status'] == 'Reviewed'
-                                      ? Colors.green
-                                      : Colors.orange,
-                                ),
-                              ),
-                              SizedBox(height: 16),
-                              CustomButton(
-                                text: 'View Details',
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          LabResultDetailScreen(
-                                        labResult: labResult,
-                                      ),
+                      return FutureBuilder<String>(
+                        future: getDoctorName(labResult['doctorUid'] ?? ''),
+                        builder: (context, doctorSnapshot) {
+                          String doctorName =
+                              doctorSnapshot.data ?? 'Unknown Doctor';
+
+                          return Card(
+                            margin: EdgeInsets.only(bottom: 10),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    labResult['testName'] ?? 'Unknown Test',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Date: ${labResult['date'] ?? '-'}',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Result: ${labResult['result'] ?? 'Pending'}',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Status: ${labResult.containsKey('status') && labResult['status'] != null ? labResult['status'] : 'Pending'}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: (labResult['status'] == 'Reviewed')
+                                          ? Colors.green
+                                          : (labResult['status'] == 'Completed')
+                                              ? Colors.blue
+                                              : Colors.orange,
                                     ),
-                                  );
-                                },
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Doctor: $doctorName',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87),
+                                  ),
+                                  SizedBox(height: 16),
+                                  CustomButton(
+                                    text: 'View Details',
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              LabResultDetailScreen(
+                                            labResult: labResult,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
+                            ),
+                          );
+                        },
                       );
                     },
                   );

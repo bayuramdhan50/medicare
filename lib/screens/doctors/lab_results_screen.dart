@@ -147,11 +147,97 @@ class _LabResultsScreenState extends State<LabResultsScreen> {
               String testName = labResult['testName'] ?? 'Unknown Test';
               String result = labResult['result'] ?? 'Not Available';
               String status = labResult['status'] ?? 'Pending';
+              String docId = labResults[index].id; // ID dokumen Firestore
+              String date = labResult['date'] ?? 'Unknown Date';
+              String notes = labResult['notes'] ?? '';
 
-              return ListTile(
-                title: Text('Test: $testName'),
-                subtitle: Text(
-                    'Result: $result\nStatus: $status\nPatient ID: $patientId'),
+              return FutureBuilder<DocumentSnapshot>(
+                future: _firestore.collection('users').doc(patientId).get(),
+                builder: (context, patientSnapshot) {
+                  if (patientSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return ListTile(
+                      title: Text('Test: $testName'),
+                      subtitle: Text('Loading patient data...'),
+                    );
+                  }
+
+                  if (patientSnapshot.hasError ||
+                      !patientSnapshot.hasData ||
+                      !patientSnapshot.data!.exists) {
+                    return ListTile(
+                      title: Text('Test: $testName'),
+                      subtitle: Text(
+                          'Result: $result\nStatus: $status\nPatient: Not Found'),
+                    );
+                  }
+
+                  var patientData =
+                      patientSnapshot.data!.data() as Map<String, dynamic>;
+                  String patientName = patientData['name'] ?? 'Unknown';
+
+                  return ListTile(
+                    title: Text('Test: $testName'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Result: $result'),
+                        Text('Date: $date'),
+                        Text('Patient: $patientName'),
+                        Row(
+                          children: [
+                            Text('Status: '),
+                            DropdownButton<String>(
+                              value: status,
+                              onChanged: (newStatus) async {
+                                if (newStatus != null) {
+                                  await _firestore
+                                      .collection('lab_results')
+                                      .doc(docId)
+                                      .update({
+                                    'status': newStatus,
+                                  });
+                                  setState(() {}); // Refresh UI setelah update
+                                }
+                              },
+                              items: ['Pending', 'Reviewed', 'Completed']
+                                  .map((status) => DropdownMenuItem(
+                                        value: status,
+                                        child: Text(status),
+                                      ))
+                                  .toList(),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Text('Doctor Notes:',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
+                        TextField(
+                          controller: TextEditingController(text: notes),
+                          maxLines: 3,
+                          decoration: InputDecoration(
+                              hintText: 'Enter notes...',
+                              border: OutlineInputBorder()),
+                          onChanged: (value) {
+                            notes = value;
+                          },
+                        ),
+                        SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () async {
+                            await _firestore
+                                .collection('lab_results')
+                                .doc(docId)
+                                .update({'notes': notes});
+                            setState(() {});
+                          },
+                          child: Text('Save Notes'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               );
             },
           );
