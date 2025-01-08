@@ -31,6 +31,12 @@ class PatientDashboard extends StatelessWidget {
     }
   }
 
+  void onProfileUpdated(UserModel updatedUser) {
+    // Lakukan sesuatu dengan updatedUser, seperti menyimpan data ke Firestore
+    print("Profil diperbarui: ${updatedUser.name}");
+    // Di sini, Anda bisa menambahkan logika lain, seperti memperbarui UI atau database
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -95,7 +101,14 @@ class PatientDashboard extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ProfileScreen()),
+                                builder: (context) => ProfileScreen(
+                                  user:
+                                      user, // Pastikan 'user' sudah terisi dengan data yang valid
+                                  onProfileUpdated: onProfileUpdated,
+                                  onLogout:
+                                      () {}, // Berikan fungsi untuk menangani pembaruan profil
+                                ),
+                              ),
                             );
                           },
                           child: CircleAvatar(
@@ -240,8 +253,7 @@ class PatientDashboard extends StatelessWidget {
                                   onTap: () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          FindHospitalScreen(user: user),
+                                      builder: (context) => FindHospital(),
                                     ),
                                   ),
                                 ),

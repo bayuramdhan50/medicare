@@ -1,88 +1,139 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:medicare/models/user_model.dart';
-import 'package:medicare/widgets/custom_button.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
-class FindHospitalScreen extends StatefulWidget {
-  final UserModel user;
-
-  FindHospitalScreen({required this.user});
-
+class FindHospital extends StatefulWidget {
   @override
-  _FindHospitalScreenState createState() => _FindHospitalScreenState();
+  _FindHospitalState createState() => _FindHospitalState();
 }
 
-class _FindHospitalScreenState extends State<FindHospitalScreen> {
-  late GoogleMapController _mapController;
-  Set<Marker> _markers = {};
+class _FindHospitalState extends State<FindHospital> {
+  late final MapController _mapController;
+  double _zoom = 13.0;
+  LatLng _center = LatLng(-6.9175, 107.6191); // Bandung
+  String? _selectedHospital;
 
-  // Initial position of the map (can be your current location or a default position)
-  static const LatLng _initialPosition =
-      LatLng(37.7749, -122.4194); // San Francisco
+  // Daftar rumah sakit dengan koordinat
+  final List<Map<String, dynamic>> _hospitals = [
+    {"name": "RS Hasan Sadikin", "location": LatLng(-6.9572, 107.6256)},
+    {"name": "RSUP Dr. Kariadi", "location": LatLng(-6.9274, 107.5971)},
+    {"name": "RS Al Islam", "location": LatLng(-6.9237, 107.6253)},
+    {"name": "RS Santo Yusuf", "location": LatLng(-6.9261, 107.6072)},
+  ];
 
   @override
   void initState() {
     super.initState();
-    _addHospitalMarkers();
+    _mapController = MapController();
   }
 
-  // Method to add markers for hospitals
-  void _addHospitalMarkers() {
-    // Example list of hospitals, you can replace this with actual data
-    List<LatLng> hospitalLocations = [
-      LatLng(37.7749, -122.4194), // Example hospital location 1 (San Francisco)
-      LatLng(37.7849, -122.4294), // Example hospital location 2
-      LatLng(37.7949, -122.4394), // Example hospital location 3
-    ];
-
+  void _selectHospital(String hospitalName, LatLng location) {
     setState(() {
-      _markers.clear();
-      for (var location in hospitalLocations) {
-        _markers.add(Marker(
-          markerId: MarkerId(location.toString()),
-          position: location,
-          infoWindow: InfoWindow(title: 'Hospital', snippet: 'Address'),
-        ));
-      }
+      _selectedHospital = hospitalName;
+      _center = location;
+      _mapController.move(location, _zoom); // Pindahkan ke lokasi rumah sakit
     });
-  }
-
-  // Method to move the camera to a specific position
-  void _onMapCreated(GoogleMapController controller) {
-    _mapController = controller;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Find Hospital'),
-        backgroundColor: Colors.blue,
-      ),
-      body: Column(
-        children: <Widget>[
-          // Google Map to display hospital locations
-          Expanded(
-            child: GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: _initialPosition,
-                zoom: 14.0,
+      appBar: AppBar(title: Text("Find Hospital")),
+      body: Stack(
+        children: [
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              initialCenter: _center,
+              initialZoom: _zoom,
+              maxZoom: 18.0,
+              minZoom: 5.0,
+            ),
+            children: [
+              TileLayer(
+                urlTemplate:
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                subdomains: ['a', 'b', 'c'],
               ),
-              markers: _markers,
+              MarkerLayer(
+                markers: _hospitals.map((hospital) {
+                  return Marker(
+                    point: hospital['location'],
+                    width: 40,
+                    height: 40,
+                    child: GestureDetector(
+                      onTap: () => _selectHospital(
+                          hospital['name'], hospital['location']),
+                      child: Icon(Icons.local_hospital,
+                          color: Colors.red, size: 35),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  heroTag: "zoomIn",
+                  mini: true,
+                  onPressed: () {
+                    setState(() {
+                      _zoom = (_zoom + 1).clamp(5.0, 18.0);
+                      _mapController.move(_center, _zoom);
+                    });
+                  },
+                  child: Icon(Icons.zoom_in),
+                  backgroundColor: Colors.white,
+                ),
+                SizedBox(height: 10),
+                FloatingActionButton(
+                  heroTag: "zoomOut",
+                  mini: true,
+                  onPressed: () {
+                    setState(() {
+                      _zoom = (_zoom - 1).clamp(5.0, 18.0);
+                      _mapController.move(_center, _zoom);
+                    });
+                  },
+                  child: Icon(Icons.zoom_out),
+                  backgroundColor: Colors.white,
+                ),
+              ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: CustomButton(
-              text: 'Search Hospitals Nearby', // Button to search hospitals
-              onPressed: () {
-                // You can implement API or logic to search hospitals here
-                // For now, it just reloads the markers
-                _addHospitalMarkers();
-              },
+          if (_selectedHospital != null)
+            Positioned(
+              bottom: 80,
+              left: 20,
+              right: 20,
+              child: Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Selected: $_selectedHospital",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Tambahkan fungsi untuk lanjut ke halaman selanjutnya
+                        print("Hospital $_selectedHospital selected!");
+                      },
+                      child: Text("Confirm"),
+                    )
+                  ],
+                ),
+              ),
             ),
-          ),
         ],
       ),
     );
