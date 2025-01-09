@@ -102,7 +102,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(height: 2),
                 Center(
                   child: Image.asset(
-                    'images/logo.png',
+                    'images/Logo.png',
                     height: 200,
                   ),
                 ),

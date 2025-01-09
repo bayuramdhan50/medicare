@@ -31,7 +31,7 @@ class GettingStartedScreen extends StatelessWidget {
                 Column(
                   children: [
                     Image.asset(
-                      'images/logo.png',
+                      'images/Logo.png',
                       height: 250,
                     ),
                   ],
