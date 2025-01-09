@@ -33,191 +33,203 @@ class PrescriptionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Prescriptions'),
-        backgroundColor: Colors.blue,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              'Prescriptions for ${user.name}',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+      body: Stack(
+        children: [
+          // Background gradient
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.blue.shade50, Colors.white],
               ),
             ),
-            SizedBox(height: 20),
-            // Mengambil data resep dari Firestore
-            Expanded(
+          ),
+
+          // Header dengan wave clipper
+          ClipPath(
+            clipper: WaveClipper(),
+            child: Container(
+              height: 200,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue.shade400, Colors.blue.shade800],
+                ),
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Prescriptions',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            user.name,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white.withOpacity(0.9),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Content
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 80.0),
               child: StreamBuilder<QuerySnapshot>(
                 stream: _firestore
                     .collection('prescriptions')
-                    .where('patientId',
-                        isEqualTo: user.uid) // Hanya mengambil resep pasien ini
+                    .where('patientId', isEqualTo: user.uid)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                      ),
+                    );
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Center(child: Text('No prescriptions available.'));
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.medication_outlined,
+                            size: 60,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'No prescriptions available',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   }
 
                   final prescriptions = snapshot.data!.docs;
                   return ListView.builder(
+                    padding: EdgeInsets.all(16),
                     itemCount: prescriptions.length,
                     itemBuilder: (context, index) {
                       final prescription =
                           prescriptions[index].data() as Map<String, dynamic>;
-
-                      // Mengambil doctorId dari resep
                       final doctorUid = prescription['doctorId'];
 
-                      // Menggunakan FutureBuilder untuk menampilkan nama dokter
                       return FutureBuilder<String>(
-                        future:
-                            getDoctorName(doctorUid), // Memanggil getDoctorName
+                        future: getDoctorName(doctorUid),
                         builder: (context, doctorSnapshot) {
-                          if (doctorSnapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Card(
-                              margin: EdgeInsets.only(bottom: 10),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      'Doctor: Loading...',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Medicine: ${prescription['medication']}',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Dose: ${prescription['dose']}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Instructions: ${prescription['instructions']}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                        'Date: ${DateFormat('yyyy-MM-dd').format(prescription['date'].toDate())}'),
-                                    SizedBox(height: 16),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-
-                          if (doctorSnapshot.hasError) {
-                            return Card(
-                              margin: EdgeInsets.only(bottom: 10),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      'Doctor: Unknown',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Medicine: ${prescription['medication']}',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Dose: ${prescription['dose']}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Instructions: ${prescription['instructions']}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                        'Date: ${DateFormat('yyyy-MM-dd').format(prescription['date'].toDate())}'),
-                                    SizedBox(height: 16),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-
                           return Card(
-                            margin: EdgeInsets.only(bottom: 10),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    'Doctor: ${doctorSnapshot.data}',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                            elevation: 4,
+                            margin: EdgeInsets.only(bottom: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                gradient: LinearGradient(
+                                  colors: [Colors.white, Colors.blue.shade50],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(Icons.calendar_today,
+                                            color: Colors.blue),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          DateFormat('yyyy-MM-dd').format(
+                                              prescription['date'].toDate()),
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Medicine: ${prescription['medication']}',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                                    Divider(height: 24),
+                                    _buildInfoRow(
+                                      Icons.person,
+                                      'Doctor',
+                                      doctorSnapshot.data ?? 'Loading...',
                                     ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Dose: ${prescription['dose']}',
-                                    style: TextStyle(
-                                      fontSize: 16,
+                                    SizedBox(height: 12),
+                                    _buildInfoRow(
+                                      Icons.medication,
+                                      'Medicine',
+                                      prescription['medication'] ??
+                                          'Not specified',
                                     ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Instructions: ${prescription['instructions']}',
-                                    style: TextStyle(
-                                      fontSize: 16,
+                                    SizedBox(height: 12),
+                                    _buildInfoRow(
+                                      Icons.schedule,
+                                      'Dose',
+                                      prescription['dose'] ?? 'Not specified',
                                     ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                      'Date: ${DateFormat('yyyy-MM-dd').format(prescription['date'].toDate())}'),
-                                  SizedBox(height: 16),
-                                ],
+                                    SizedBox(height: 12),
+                                    _buildInfoRow(
+                                      Icons.info_outline,
+                                      'Instructions',
+                                      prescription['instructions'] ??
+                                          'Not specified',
+                                    ),
+                                    SizedBox(height: 16),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton.icon(
+                                        icon: Icon(Icons.remove_red_eye),
+                                        label: Text('View Details'),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.blue,
+                                          foregroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 12),
+                                        ),
+                                        onPressed: () {
+                                          // Add functionality to view details
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -228,9 +240,67 @@ class PrescriptionScreen extends StatelessWidget {
                 },
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: Colors.blue),
+        SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class WaveClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+    path.lineTo(0, size.height - 40);
+
+    var firstControlPoint = Offset(size.width / 4, size.height);
+    var firstEndPoint = Offset(size.width / 2.25, size.height - 30);
+    path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
+        firstEndPoint.dx, firstEndPoint.dy);
+
+    var secondControlPoint =
+        Offset(size.width - (size.width / 3.25), size.height - 65);
+    var secondEndPoint = Offset(size.width, size.height - 40);
+    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
+        secondEndPoint.dx, secondEndPoint.dy);
+
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

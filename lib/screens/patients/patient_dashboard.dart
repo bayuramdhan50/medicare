@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medicare/screens/patients/book_appointment_screen.dart';
 import 'package:medicare/screens/patients/my_appointment_screen.dart';
@@ -9,11 +10,61 @@ import 'package:medicare/screens/patients/profile_screen.dart';
 import 'package:medicare/models/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:medicare/screens/patients/article_screen.dart';
 
-class PatientDashboard extends StatelessWidget {
+class PatientDashboard extends StatefulWidget {
   final UserModel user;
-
   PatientDashboard({required this.user});
+
+  @override
+  _PatientDashboardState createState() => _PatientDashboardState();
+}
+
+class _PatientDashboardState extends State<PatientDashboard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: Duration(milliseconds: 400),
+      vsync: this,
+    );
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _onItemTapped(int index) {
+    if (index != _selectedIndex) {
+      setState(() => _selectedIndex = index);
+      _animationController.reset();
+      _animationController.forward();
+
+      if (index == 1) {
+        // Forum
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                ArticleScreen(
+              user: widget.user,
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          ),
+        );
+      }
+    }
+  }
 
   final List<String> bannerImages = [
     'assets/images/banner1.jpg',
@@ -84,7 +135,7 @@ class PatientDashboard extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                user.name ?? 'Pasien',
+                                widget.user.name ?? 'Pasien',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -102,8 +153,8 @@ class PatientDashboard extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ProfileScreen(
-                                  user:
-                                      user, // Pastikan 'user' sudah terisi dengan data yang valid
+                                  user: widget
+                                      .user, // Pastikan 'user' sudah terisi dengan data yang valid
                                   onProfileUpdated: onProfileUpdated,
                                   onLogout:
                                       () {}, // Berikan fungsi untuk menangani pembaruan profil
@@ -199,7 +250,8 @@ class PatientDashboard extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          BookAppointmentScreen(user: user),
+                                          BookAppointmentScreen(
+                                              user: widget.user),
                                     ),
                                   ),
                                 ),
@@ -209,8 +261,8 @@ class PatientDashboard extends StatelessWidget {
                                   onTap: () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          MyAppointmentScreen(user: user),
+                                      builder: (context) => MyAppointmentScreen(
+                                          user: widget.user),
                                     ),
                                   ),
                                 ),
@@ -221,7 +273,8 @@ class PatientDashboard extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          MedicalRecordsScreen(user: user),
+                                          MedicalRecordsScreen(
+                                              user: widget.user),
                                     ),
                                   ),
                                 ),
@@ -232,7 +285,7 @@ class PatientDashboard extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          PrescriptionScreen(user: user),
+                                          PrescriptionScreen(user: widget.user),
                                     ),
                                   ),
                                 ),
@@ -243,7 +296,7 @@ class PatientDashboard extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          LabResultScreen(user: user),
+                                          LabResultScreen(user: widget.user),
                                     ),
                                   ),
                                 ),
@@ -322,6 +375,97 @@ class PatientDashboard extends StatelessWidget {
           ),
         ],
       ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, -5),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+            backgroundColor: Colors.white,
+            selectedItemColor: Colors.blue,
+            unselectedItemColor: Colors.grey,
+            showUnselectedLabels: true,
+            items: [
+              _buildNavItem(Icons.home, 'Home', 0),
+              _buildNavItem(Icons.article, 'Articles', 1),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  BottomNavigationBarItem _buildNavItem(
+      IconData icon, String label, int index) {
+    return BottomNavigationBarItem(
+      icon: AnimatedBuilder(
+        animation: _animationController,
+        builder: (context, child) {
+          return Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: _selectedIndex == index
+                  ? Colors.blue.withOpacity(0.1)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TweenAnimationBuilder(
+              duration: Duration(milliseconds: 300),
+              tween: Tween<double>(
+                begin: 1.0,
+                end: _selectedIndex == index ? 1.2 : 1.0,
+              ),
+              builder: (context, double scale, child) {
+                return Transform.scale(
+                  scale: scale,
+                  child: Icon(
+                    icon,
+                    color: _selectedIndex == index ? Colors.blue : Colors.grey,
+                    size: 24 +
+                        (_selectedIndex == index
+                            ? _animationController.value * 4
+                            : 0),
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      ),
+      activeIcon: AnimatedBuilder(
+        animation: _animationController,
+        builder: (context, child) {
+          return Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blue.withOpacity(0.2),
+                  blurRadius: _animationController.value * 8,
+                  spreadRadius: _animationController.value * 2,
+                ),
+              ],
+            ),
+            child: Icon(
+              icon,
+              color: Colors.blue,
+              size: 28,
+            ),
+          );
+        },
+      ),
+      label: label,
     );
   }
 }
@@ -463,5 +607,49 @@ class StatItem extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+// Tambahkan class untuk animasi ripple effect
+class RippleAnimation extends StatelessWidget {
+  final Widget child;
+  final Animation<double> animation;
+
+  RippleAnimation({required this.child, required this.animation});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: RipplePainter(
+        color: Colors.blue.withOpacity(0.1),
+        animationValue: animation.value,
+      ),
+      child: child,
+    );
+  }
+}
+
+class RipplePainter extends CustomPainter {
+  final Color color;
+  final double animationValue;
+
+  RipplePainter({required this.color, required this.animationValue});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height / 2),
+      (size.width / 2) * animationValue,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(RipplePainter oldDelegate) {
+    return animationValue != oldDelegate.animationValue;
   }
 }
