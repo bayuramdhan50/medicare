@@ -172,11 +172,10 @@ class PrescriptionScreen extends StatelessWidget {
                                             color: Colors.blue),
                                         SizedBox(width: 8),
                                         Text(
-                                          DateFormat('yyyy-MM-dd').format(
-                                              prescription['date'].toDate()),
+                                          'Date: ${DateFormat('yyyy-MM-dd').format(prescription['date'].toDate())}',
                                           style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey[600],
+                                            fontSize: 14,
                                           ),
                                         ),
                                       ],

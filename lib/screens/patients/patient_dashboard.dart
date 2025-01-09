@@ -7,6 +7,7 @@ import 'package:medicare/screens/patients/prescription_screen.dart';
 import 'package:medicare/screens/patients/lab_result_screen.dart';
 import 'package:medicare/screens/patients/find_hospital_screen.dart';
 import 'package:medicare/screens/patients/profile_screen.dart';
+import 'package:medicare/auth/login_screen.dart';
 import 'package:medicare/models/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -156,8 +157,13 @@ class _PatientDashboardState extends State<PatientDashboard>
                                   user: widget
                                       .user, // Pastikan 'user' sudah terisi dengan data yang valid
                                   onProfileUpdated: onProfileUpdated,
-                                  onLogout:
-                                      () {}, // Berikan fungsi untuk menangani pembaruan profil
+                                  onLogout: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                LoginScreen()));
+                                  }, // Pastikan 'onLogout' sudah terisi
                                 ),
                               ),
                             );
