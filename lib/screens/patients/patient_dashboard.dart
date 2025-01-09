@@ -68,9 +68,9 @@ class _PatientDashboardState extends State<PatientDashboard>
   }
 
   final List<String> bannerImages = [
-    'assets/images/banner1.jpg',
-    'assets/images/banner2.jpg',
-    'assets/images/banner3.jpg',
+    'images/banner1.jpg',
+    'images/banner2.jpg',
+    'images/banner3.jpg',
   ];
 
   Future<Map<String, dynamic>> fetchCovidData() async {
