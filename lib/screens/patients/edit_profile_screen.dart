@@ -16,21 +16,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController nameController;
   late TextEditingController emailController;
   late TextEditingController ageController;
-  late TextEditingController genderController;
-  late TextEditingController healthStatusController;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String? selectedGender;
 
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with the current user data
     nameController = TextEditingController(text: widget.user.name);
     emailController = TextEditingController(text: widget.user.email);
     ageController = TextEditingController(text: widget.user.age?.toString());
-    genderController = TextEditingController(text: widget.user.gender);
-    healthStatusController =
-        TextEditingController(text: widget.user.healthStatus);
+    selectedGender = widget.user.gender;
   }
 
   @override
@@ -38,8 +34,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     nameController.dispose();
     emailController.dispose();
     ageController.dispose();
-    genderController.dispose();
-    healthStatusController.dispose();
     super.dispose();
   }
 
@@ -48,27 +42,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       uid: widget.user.uid,
       name: nameController.text,
       email: emailController.text,
-      role: widget.user.role, // Role does not change in this case
-      age: int.tryParse(ageController.text), // Convert age to integer
-      gender: genderController.text,
-      healthStatus: healthStatusController.text,
+      role: widget.user.role,
+      age: int.tryParse(ageController.text),
+      gender: selectedGender,
     );
 
     try {
-      // Update Firestore user document
       await _firestore.collection('users').doc(widget.user.uid).update({
         'name': updatedUser.name,
         'email': updatedUser.email,
         'age': updatedUser.age,
         'gender': updatedUser.gender,
-        'healthStatus': updatedUser.healthStatus,
       });
 
-      widget.onSave(
-          updatedUser); // Call the onSave function passed from ProfileScreen
-      Navigator.pop(context); // Go back to ProfileScreen after saving
+      widget.onSave(updatedUser);
+      Navigator.pop(context);
     } catch (e) {
-      // Handle errors if any
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error saving profile: $e')),
       );
@@ -103,15 +92,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 icon: Icons.calendar_today,
                 keyboardType: TextInputType.number,
               ),
-              _buildTextField(
-                controller: genderController,
-                label: 'Gender',
-                icon: Icons.accessibility,
-              ),
-              _buildTextField(
-                controller: healthStatusController,
-                label: 'Health Status',
-                icon: Icons.healing,
+              DropdownButtonFormField<String>(
+                value: selectedGender,
+                decoration: InputDecoration(
+                  labelText: "Jenis Kelamin",
+                  prefixIcon: Icon(Icons.wc_outlined),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                items: ['Laki-laki', 'Perempuan', 'Lainnya']
+                    .map((gender) => DropdownMenuItem(
+                          value: gender,
+                          child: Text(gender),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedGender = value;
+                  });
+                },
               ),
               SizedBox(height: 20),
               ElevatedButton(

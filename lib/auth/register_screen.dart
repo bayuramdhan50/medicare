@@ -17,9 +17,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
+  final TextEditingController genderController = TextEditingController();
 
   // Firebase Auth instance
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Tambahkan variabel untuk menyimpan pilihan jenis kelamin
+  String? selectedGender;
 
   // Function to register user
   Future<void> registerUser() async {
@@ -37,6 +42,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         name: nameController.text.trim(),
         email: emailController.text.trim(),
         role: 'patient', // Default role set to 'patient'
+        age: int.tryParse(ageController.text.trim()), // Parse age
+        gender: selectedGender, // Use selected gender from dropdown
       );
 
       // Save additional user data (like name, email, and role) to Firestore
@@ -156,6 +163,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         isPassword: true,
                         controller: passwordController,
                         prefixIcon: Icon(Icons.lock_outline),
+                      ),
+                      SizedBox(height: 20),
+                      CustomTextField(
+                        label: "Umur",
+                        controller: ageController,
+                        prefixIcon: Icon(Icons.cake_outlined),
+                        keyboardType: TextInputType.number,
+                      ),
+                      SizedBox(height: 20),
+                      DropdownButtonFormField<String>(
+                        value: selectedGender,
+                        decoration: InputDecoration(
+                          labelText: "Jenis Kelamin",
+                          prefixIcon: Icon(Icons.wc_outlined),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        items: ['Laki-laki', 'Perempuan', 'Lainnya']
+                            .map((gender) => DropdownMenuItem(
+                                  value: gender,
+                                  child: Text(gender),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedGender = value;
+                          });
+                        },
                       ),
                       SizedBox(height: 30),
                       CustomButton(
