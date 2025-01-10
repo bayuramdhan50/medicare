@@ -7,6 +7,7 @@ class UserModel {
   final String?
       gender; // Gender of the user (e.g., Male, Female, etc.), optional
   final String? healthStatus; // Health status of the user, optional
+  final String? fcmToken; // Add this field
 
   UserModel({
     required this.uid,
@@ -16,6 +17,7 @@ class UserModel {
     this.age, // Optional parameter
     this.gender, // Optional parameter
     this.healthStatus, // Optional parameter
+    this.fcmToken,
   });
 
   Map<String, dynamic> toMap() {
@@ -27,6 +29,7 @@ class UserModel {
       'age': age, // Age can be null
       'gender': gender, // Gender can be null
       'healthStatus': healthStatus, // Health status can be null
+      'fcmToken': fcmToken,
     };
   }
 
@@ -39,6 +42,7 @@ class UserModel {
       age: map['age'], // Age can be null
       gender: map['gender'], // Gender can be null
       healthStatus: map['healthStatus'], // Health status can be null
+      fcmToken: map['fcmToken'],
     );
   }
 }

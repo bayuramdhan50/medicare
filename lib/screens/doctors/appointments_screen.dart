@@ -7,14 +7,42 @@ class AppointmentsScreen extends StatelessWidget {
 
   AppointmentsScreen({required this.user});
 
+  Future<void> _sendNotification(
+      String userId, String title, String body) async {
+    await FirebaseFirestore.instance.collection('notifications').add({
+      'userId': userId,
+      'title': title,
+      'body': body,
+      'timestamp': FieldValue.serverTimestamp(),
+      'isRead': false,
+    });
+  }
+
   void updateStatus(String appointmentId, String newStatus) async {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     try {
-      await _firestore.collection('appointments').doc(appointmentId).update({
-        'status': newStatus,
-      });
+      DocumentSnapshot appointmentDoc =
+          await _firestore.collection('appointments').doc(appointmentId).get();
+
+      if (appointmentDoc.exists) {
+        Map<String, dynamic> appointmentData =
+            appointmentDoc.data() as Map<String, dynamic>;
+        String patientId = appointmentData['patientId'];
+
+        // Update status
+        await _firestore.collection('appointments').doc(appointmentId).update({
+          'status': newStatus,
+        });
+
+        // Send notification
+        await _sendNotification(
+          patientId,
+          'Appointment Status Update',
+          'Your appointment status has been updated to $newStatus',
+        );
+      }
     } catch (e) {
-      print("Error updating status: $e");
+      print('Error updating status: $e');
     }
   }
 

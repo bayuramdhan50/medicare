@@ -1,55 +1,82 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationService {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
-  // Request Permission for Notifications
-  Future<void> requestNotificationPermission() async {
-    NotificationSettings settings =
-        await _firebaseMessaging.requestPermission();
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('Notification permission granted');
-    } else {
-      print('Notification permission denied');
+  Future<void> initialize() async {
+    // Request permission for notifications
+    await _fcm.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    // Initialize local notifications
+    const initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    final initializationSettingsIOS = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+    final initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+
+    await _localNotifications.initialize(initializationSettings);
+
+    // Handle background messages
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    // Handle foreground messages
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _showNotification(message);
+    });
+  }
+
+  Future<void> _showNotification(RemoteMessage message) async {
+    const androidDetails = AndroidNotificationDetails(
+      'default_channel',
+      'Default Channel',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+    const iosDetails = DarwinNotificationDetails();
+    const details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _localNotifications.show(
+      0,
+      message.notification?.title ?? 'Status Update',
+      message.notification?.body,
+      details,
+    );
+  }
+
+  Future<String?> getToken() async {
+    return await _fcm.getToken();
+  }
+
+  // Save FCM token to Firestore
+  Future<void> saveToken(String uid) async {
+    String? token = await getToken();
+    if (token != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .update({'fcmToken': token});
     }
   }
+}
 
-  // Get FCM Token
-  Future<String?> getFcmToken() async {
-    String? token = await _firebaseMessaging.getToken();
-    return token;
-  }
-
-  // Handle Notification
-  Future<void> handleNotification(RemoteMessage message) async {
-    // Show local notification
-    await _showLocalNotification(message);
-  }
-
-  // Show Local Notification
-  Future<void> _showLocalNotification(RemoteMessage message) async {
-    var androidDetails = AndroidNotificationDetails(
-      'your_channel_id',
-      'your_channel_name',
-      importance: Importance.max,
-    );
-    var platformDetails = NotificationDetails(android: androidDetails);
-
-    await _flutterLocalNotificationsPlugin.show(
-      0,
-      message.notification?.title,
-      message.notification?.body,
-      platformDetails,
-      payload: 'Custom data',
-    );
-  }
-
-  // Initialize Firebase Messaging
-  Future<void> initializeFirebaseMessaging() async {
-    FirebaseMessaging.onMessage.listen(handleNotification);
-    FirebaseMessaging.onMessageOpenedApp.listen(handleNotification);
-  }
+// Handle background messages
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("Handling a background message: ${message.messageId}");
 }

@@ -12,6 +12,8 @@ import 'package:medicare/models/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:medicare/screens/patients/article_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:medicare/screens/notifications_screen.dart';
 
 class PatientDashboard extends StatefulWidget {
   final UserModel user;
@@ -87,6 +89,60 @@ class _PatientDashboardState extends State<PatientDashboard>
     // Lakukan sesuatu dengan updatedUser, seperti menyimpan data ke Firestore
     print("Profil diperbarui: ${updatedUser.name}");
     // Di sini, Anda bisa menambahkan logika lain, seperti memperbarui UI atau database
+  }
+
+  Widget _buildNotificationIcon() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('notifications')
+          .where('userId', isEqualTo: widget.user.uid)
+          .where('isRead', isEqualTo: false)
+          .snapshots(),
+      builder: (context, snapshot) {
+        int unreadCount = snapshot.hasData ? snapshot.data!.docs.length : 0;
+
+        return Stack(
+          children: [
+            IconButton(
+              icon: Icon(Icons.notifications),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        NotificationsScreen(user: widget.user),
+                  ),
+                );
+              },
+            ),
+            if (unreadCount > 0)
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Container(
+                  padding: EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  constraints: BoxConstraints(
+                    minWidth: 20,
+                    minHeight: 20,
+                  ),
+                  child: Text(
+                    '$unreadCount',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
   }
 
   @override
