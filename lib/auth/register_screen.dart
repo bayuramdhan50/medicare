@@ -26,6 +26,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // Tambahkan variabel untuk menyimpan pilihan jenis kelamin
   String? selectedGender;
 
+  // Variabel untuk mengontrol visibilitas password
+  bool showPassword = false;
+
   // Function to register user
   Future<void> registerUser() async {
     try {
@@ -110,7 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Center(
                   child: Image.asset(
                     'images/Logo.png',
-                    height: 200,
+                    height: 100,
                   ),
                 ),
                 SizedBox(height: 4),
@@ -151,27 +154,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         controller: nameController,
                         prefixIcon: Icon(Icons.person_outline),
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
                       CustomTextField(
                         label: "Email",
                         controller: emailController,
                         prefixIcon: Icon(Icons.email_outlined),
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
                       CustomTextField(
                         label: "Password",
-                        isPassword: true,
+                        isPassword: !showPassword,
                         controller: passwordController,
                         prefixIcon: Icon(Icons.lock_outline),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            showPassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              showPassword = !showPassword;
+                            });
+                          },
+                        ),
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
                       CustomTextField(
                         label: "Umur",
                         controller: ageController,
                         prefixIcon: Icon(Icons.cake_outlined),
                         keyboardType: TextInputType.number,
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         value: selectedGender,
                         decoration: InputDecoration(
@@ -209,7 +225,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 10),
                 Center(
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),

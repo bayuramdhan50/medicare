@@ -41,11 +41,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
         future: _fetchUserData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF08A8B1)),
+              ),
+            );
           }
 
           if (snapshot.hasError || !snapshot.hasData) {
-            return Center(child: Text("Failed to load profile"));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 60, color: Colors.red),
+                  SizedBox(height: 16),
+                  Text(
+                    "Failed to load profile",
+                    style: TextStyle(fontSize: 18, color: Colors.red),
+                  ),
+                ],
+              ),
+            );
           }
 
           UserModel user = snapshot.data!;
@@ -57,7 +73,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.blue.shade800, Colors.blue.shade500],
+                    colors: [
+                      Color(0xFF08A8B1),
+                      Color(0xFF08A8B1).withOpacity(0.7)
+                    ],
                   ),
                 ),
               ),
@@ -70,29 +89,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                         child: Column(
                           children: [
-                            CircleAvatar(
-                              radius: 50,
-                              backgroundColor: Colors.white,
-                              child: Icon(
-                                Icons.person,
-                                size: 60,
-                                color: Colors.blue.shade800,
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    blurRadius: 10,
+                                    offset: Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: CircleAvatar(
+                                radius: 60,
+                                backgroundColor: Colors.white,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 70,
+                                  color: Color(0xFF08A8B1),
+                                ),
                               ),
                             ),
-                            SizedBox(height: 15),
+                            SizedBox(height: 20),
                             Text(
                               user.name,
                               style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black26,
+                                    blurRadius: 2,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
                             ),
-                            SizedBox(height: 5),
+                            SizedBox(height: 8),
                             Text(
                               user.email,
                               style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white.withOpacity(0.8)),
+                                fontSize: 18,
+                                color: Colors.white.withOpacity(0.9),
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black26,
+                                    blurRadius: 2,
+                                    offset: Offset(0, 1),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -102,37 +149,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(30),
-                            topRight: Radius.circular(30),
+                            topLeft: Radius.circular(40),
+                            topRight: Radius.circular(40),
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 10,
+                              offset: Offset(0, -5),
+                            ),
+                          ],
                         ),
                         child: Padding(
                           padding: EdgeInsets.all(20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Personal Information',
-                                  style: TextStyle(
-                                      fontSize: 20,
+                              Row(
+                                children: [
+                                  Icon(Icons.person_pin,
+                                      color: Color(0xFF08A8B1), size: 30),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'Personal Information',
+                                    style: TextStyle(
+                                      fontSize: 24,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.black87)),
-                              SizedBox(height: 20),
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 15),
                               _buildInfoCard(
-                                  icon: Icons.calendar_today,
-                                  title: 'Age',
-                                  subtitle: user.age?.toString() ?? 'Not set'),
+                                icon: Icons.calendar_today,
+                                title: 'Age',
+                                subtitle: user.age?.toString() ?? 'Not set',
+                              ),
                               _buildInfoCard(
-                                  icon: Icons.accessibility,
-                                  title: 'Gender',
-                                  subtitle: user.gender ?? 'Not set'),
+                                icon: Icons.accessibility,
+                                title: 'Gender',
+                                subtitle: user.gender ?? 'Not set',
+                              ),
                               _buildInfoCard(
-                                  icon: Icons.account_circle,
-                                  title: 'Role',
-                                  subtitle: user.role),
-                              SizedBox(height: 30),
+                                icon: Icons.account_circle,
+                                title: 'Role',
+                                subtitle: user.role,
+                              ),
+                              SizedBox(height: 15),
                               SizedBox(
                                 width: double.infinity,
-                                child: ElevatedButton(
+                                height: 55,
+                                child: ElevatedButton.icon(
+                                  label: Text('Edit Profile',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      )),
                                   onPressed: () async {
                                     final updatedUser = await Navigator.push(
                                       context,
@@ -147,36 +221,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     );
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue.shade800,
-                                    padding: EdgeInsets.symmetric(vertical: 15),
+                                    backgroundColor: Color(0xFF08A8B1),
+                                    elevation: 3,
                                     shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
                                   ),
-                                  child: Text('Edit Profile',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold)),
                                 ),
                               ),
-                              SizedBox(height: 30),
+                              SizedBox(height: 10),
                               SizedBox(
                                 width: double.infinity,
-                                child: ElevatedButton(
+                                height: 55,
+                                child: ElevatedButton.icon(
+                                  label: Text('Logout',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      )),
                                   onPressed: () {
                                     widget.onLogout();
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red.shade600,
-                                    padding: EdgeInsets.symmetric(vertical: 15),
+                                    elevation: 3,
                                     shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
                                   ),
-                                  child: Text('Logout',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold)),
                                 ),
                               ),
                             ],
@@ -200,37 +273,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
       required String subtitle}) {
     return Card(
       elevation: 4,
-      margin: EdgeInsets.only(bottom: 15),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: EdgeInsets.all(15),
-        child: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(10)),
-              child: Icon(icon, color: Colors.blue.shade800, size: 24),
-            ),
-            SizedBox(width: 15),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title,
-                      style:
-                          TextStyle(fontSize: 16, color: Colors.grey.shade600)),
-                  SizedBox(height: 5),
-                  Text(subtitle,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87)),
-                ],
+      margin: EdgeInsets.only(bottom: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            colors: [Colors.white, Color(0xFF08A8B1).withOpacity(0.1)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Color(0xFF08A8B1).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xFF08A8B1).withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Icon(icon, color: Color(0xFF08A8B1), size: 28),
               ),
-            ),
-          ],
+              SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFFF19E23),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF08A8B1),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

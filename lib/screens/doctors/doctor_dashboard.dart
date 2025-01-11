@@ -101,35 +101,39 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                               Text(
                                 'Welcome,',
                                 style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontSize: 18,
                                 ),
                               ),
                               Text(
                                 'Dr. ${widget.user.name ?? 'Doctor'}',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 20,
+                                  fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                 ),
                                 overflow: TextOverflow.ellipsis,
-                                maxLines: 1, // Ensure the name doesn't overflow
+                                maxLines: 1,
                               ),
                             ],
                           ),
                         ),
                         GestureDetector(
                           onTap: () {
-                            // Navigate to ProfileScreen when CircleAvatar is tapped
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ProfileScreen()),
+                                builder: (context) =>
+                                    ProfileScreen(user: widget.user),
+                              ),
                             );
                           },
                           child: CircleAvatar(
+                            radius: 30,
                             backgroundColor: Colors.white,
-                            child: Icon(Icons.person, color: Colors.blue),
+                            child: Icon(Icons.person,
+                                color: const Color.fromARGB(255, 22, 123, 9),
+                                size: 30),
                           ),
                         )
                       ],
@@ -191,97 +195,83 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                         ),
                       ],
                     ),
-                    child: SingleChildScrollView(
-                      // Wrap the Column in a SingleChildScrollView
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Quick Actions',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Quick Actions',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        GridView.count(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          childAspectRatio: 1.0,
+                          children: [
+                            MenuIcon(
+                              icon: Icons.people,
+                              label: 'My\nPatients',
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      MyPatientsScreen(user: widget.user),
+                                ),
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 16),
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              double aspectRatio = constraints.maxWidth /
-                                  (constraints.maxHeight * 1.5);
-
-                              return GridView.count(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                crossAxisCount: 3,
-                                mainAxisSpacing: 1,
-                                crossAxisSpacing: 1,
-                                childAspectRatio:
-                                    aspectRatio > 0 ? aspectRatio : 1.0,
-                                children: [
-                                  MenuIcon(
-                                    icon: Icons.people,
-                                    label: 'My\nPatients',
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            MyPatientsScreen(user: widget.user),
-                                      ),
-                                    ),
-                                  ),
-                                  MenuIcon(
-                                    icon: Icons.calendar_today,
-                                    label: 'Appointments',
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            AppointmentsScreen(
-                                                user: widget.user),
-                                      ),
-                                    ),
-                                  ),
-                                  MenuIcon(
-                                    icon: Icons.medical_services,
-                                    label: 'Prescription',
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            PrescriptionScreen(
-                                                user: widget.user),
-                                      ),
-                                    ),
-                                  ),
-                                  MenuIcon(
-                                    icon: Icons.folder_shared,
-                                    label: 'Medical\nRecords',
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            MedicalRecordsScreen(
-                                                user: widget.user),
-                                      ),
-                                    ),
-                                  ),
-                                  MenuIcon(
-                                    icon: Icons.science,
-                                    label: 'Lab\nResults',
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            LabResultsScreen(user: widget.user),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                            MenuIcon(
+                              icon: Icons.calendar_today,
+                              label: 'Appointments',
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AppointmentsScreen(user: widget.user),
+                                ),
+                              ),
+                            ),
+                            MenuIcon(
+                              icon: Icons.medical_services,
+                              label: 'Prescription',
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      PrescriptionScreen(user: widget.user),
+                                ),
+                              ),
+                            ),
+                            MenuIcon(
+                              icon: Icons.folder_shared,
+                              label: 'Medical\nRecords',
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      MedicalRecordsScreen(user: widget.user),
+                                ),
+                              ),
+                            ),
+                            MenuIcon(
+                              icon: Icons.science,
+                              label: 'Lab\nResults',
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      LabResultsScreen(user: widget.user),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   )
                 ],

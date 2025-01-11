@@ -19,6 +19,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -170,9 +171,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: 20),
                       CustomTextField(
                         label: "Password",
-                        isPassword: true,
+                        isPassword: !_isPasswordVisible,
                         controller: passwordController,
                         prefixIcon: Icon(Icons.lock_outline),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
                       ),
                       SizedBox(height: 15),
                       Align(

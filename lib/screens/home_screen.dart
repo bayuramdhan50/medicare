@@ -16,7 +16,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFF08A8B1),
         elevation: 0,
       ),
       body: Padding(
@@ -29,6 +29,7 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
+                color: Color(0xFFF19E23),
               ),
             ),
             SizedBox(height: 20),
