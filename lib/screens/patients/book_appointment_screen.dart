@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:medicare/models/user_model.dart';
+import 'package:intl/intl.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
   final UserModel user;
@@ -103,14 +104,37 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         'status': 'Pending',
       });
 
+      // Tambahkan notifikasi untuk pasien
+      await FirebaseFirestore.instance.collection('notifications').add({
+        'userId': widget.user.uid,
+        'title': 'Appointment Berhasil Dibuat',
+        'body':
+            'Anda telah membuat janji dengan ${selectedDoctorName} pada ${DateFormat('dd/MM/yyyy').format(selectedDateTime!)} jam ${formattedTime}',
+        'timestamp': Timestamp.fromDate(selectedDateTime!),
+        'isRead': false,
+      });
+
+      // Tambahkan notifikasi untuk dokter
+      await FirebaseFirestore.instance.collection('notifications').add({
+        'userId': selectedDoctorUid,
+        'title': 'Appointment Baru',
+        'body':
+            'Pasien ${widget.user.name} membuat janji pada ${DateFormat('dd/MM/yyyy').format(selectedDateTime!)} jam ${formattedTime}',
+        'timestamp': Timestamp.fromDate(selectedDateTime!),
+        'isRead': false,
+      });
+
+      print('Notifikasi berhasil dibuat untuk pasien dan dokter');
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Appointment booked successfully!')),
       );
 
       Navigator.pop(context); // Go back to the previous screen
     } catch (e) {
+      print('Error creating appointment and notifications: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to book appointment: $e')),
+        SnackBar(content: Text('Gagal membuat appointment: $e')),
       );
     }
   }

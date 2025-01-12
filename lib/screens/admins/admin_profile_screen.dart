@@ -53,7 +53,7 @@ class AdminProfileScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 16),
                 Text(
-                  'Medicare',
+                  'HealthMate',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -84,12 +84,12 @@ class AdminProfileScreen extends StatelessWidget {
             children: [
               _buildDeveloperCard(
                 'Andhika Fajar Prayoga',
-                'UI/UX Designer',
+                'Mobile Developer',
                 'images/andhika.jpg',
               ),
               _buildDeveloperCard(
                 'Bayu Ramdhan Ardiyanto',
-                'Load Developer',
+                'Mobile Developer',
                 'images/bayu.jpeg',
               ),
             ],
@@ -103,17 +103,17 @@ class AdminProfileScreen extends StatelessWidget {
               _buildContactTile(
                 Icons.email,
                 'Email',
-                'support@medicare.com',
+                'Healthmate@gmail.com',
               ),
               _buildContactTile(
                 Icons.phone,
                 'Phone',
-                '+62 123 456 789',
+                '+62 85963160777',
               ),
               _buildContactTile(
                 Icons.location_on,
                 'Alamat',
-                'Jl. Contoh No. 123, Jakarta, Indonesia',
+                'Jl. KH Mustofa No. 123, Bandung, Indonesia',
               ),
             ],
           ),

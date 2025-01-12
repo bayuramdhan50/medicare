@@ -385,19 +385,17 @@ class _LabResultsScreenState extends State<LabResultsScreen> {
                 ),
               ),
               SizedBox(height: 8),
-              TextField(
-                controller:
-                    TextEditingController(text: labResult['notes'] ?? ''),
+              TextFormField(
+                initialValue: labResult['notes'] ?? '',
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: 'Enter notes...',
+                  labelText: 'Catatan',
+                  hintText: 'Masukkan catatan...',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
                 ),
-                onChanged: (value) async {
+                onFieldSubmitted: (value) async {
                   await _firestore
                       .collection('lab_results')
                       .doc(docId)
