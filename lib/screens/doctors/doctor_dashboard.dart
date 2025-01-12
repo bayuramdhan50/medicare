@@ -21,6 +21,7 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
   int patientCount = 0;
   int todayAppointments = 0;
   int pendingAppointments = 0;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -279,6 +280,36 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfileScreen(user: widget.user),
+              ),
+            ).then((_) => setState(() => _selectedIndex = 0));
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            activeIcon: Icon(Icons.dashboard_outlined),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        selectedItemColor: Colors.green.shade700,
+        unselectedItemColor: Colors.grey,
       ),
     );
   }
