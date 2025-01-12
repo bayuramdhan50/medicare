@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class NotificationService {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
@@ -37,6 +38,38 @@ class NotificationService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _showNotification(message);
     });
+
+    // Get and save FCM token
+    _getTokenAndSave();
+  }
+
+  Future<void> _getTokenAndSave() async {
+    String? token = await _fcm.getToken();
+    if (token != null) {
+      print("FCM Token: $token");
+      // Simpan token ke Firestore
+      await saveTokenToFirestore(token);
+    }
+  }
+
+  Future<void> saveTokenToFirestore(String token) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      String userId = user.uid;
+      DocumentReference userDoc =
+          FirebaseFirestore.instance.collection('users').doc(userId);
+
+      DocumentSnapshot docSnapshot = await userDoc.get();
+      if (docSnapshot.exists) {
+        await userDoc.update({'fcmToken': token});
+      } else {
+        print("User document does not exist");
+        // Anda bisa membuat dokumen baru jika diperlukan
+        await userDoc.set({'fcmToken': token});
+      }
+    } else {
+      print("User is not logged in");
+    }
   }
 
   Future<void> _showNotification(RemoteMessage message) async {
@@ -58,21 +91,6 @@ class NotificationService {
       message.notification?.body,
       details,
     );
-  }
-
-  Future<String?> getToken() async {
-    return await _fcm.getToken();
-  }
-
-  // Save FCM token to Firestore
-  Future<void> saveToken(String uid) async {
-    String? token = await getToken();
-    if (token != null) {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .update({'fcmToken': token});
-    }
   }
 }
 
