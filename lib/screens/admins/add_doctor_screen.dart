@@ -24,6 +24,9 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
   // List of gender options
   List<String> genderOptions = ['Male', 'Female', 'Other'];
 
+  final Color primaryColor = Color(0xFF08A8B1); // Tosca
+  final Color secondaryColor = Color(0xFFF19E23); // Orange
+
   Future<void> addDoctor() async {
     try {
       // Buat akun dokter di Firebase Authentication
@@ -81,57 +84,127 @@ class _AddDoctorScreenState extends State<AddDoctorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Doctor'),
-        backgroundColor: Colors.blue,
+        title: Text(
+          'Add Doctor',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: primaryColor,
+        elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(labelText: 'Doctor Name'),
-            ),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(labelText: 'Doctor Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            TextField(
-              controller: passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            TextField(
-              controller: ageController,
-              decoration: InputDecoration(labelText: 'Age'),
-              keyboardType: TextInputType.number,
-            ),
-            // Dropdown for gender selection
-            DropdownButtonFormField<String>(
-              value: selectedGender,
-              decoration: InputDecoration(labelText: 'Gender'),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedGender = newValue!;
-                });
-              },
-              items: genderOptions
-                  .map<DropdownMenuItem<String>>(
-                      (String value) => DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          ))
-                  .toList(),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                addDoctor();
-              },
-              child: Text('Add Doctor'),
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildInputField(
+                controller: nameController,
+                label: 'Doctor Name',
+                icon: Icons.person,
+                keyboardType: TextInputType.name,
+              ),
+              SizedBox(height: 16),
+              _buildInputField(
+                controller: emailController,
+                label: 'Doctor Email',
+                icon: Icons.email,
+                keyboardType: TextInputType.emailAddress,
+              ),
+              SizedBox(height: 16),
+              _buildInputField(
+                controller: passwordController,
+                label: 'Password',
+                icon: Icons.lock,
+                isPassword: true,
+              ),
+              SizedBox(height: 16),
+              _buildInputField(
+                controller: ageController,
+                label: 'Age',
+                icon: Icons.calendar_today,
+                keyboardType: TextInputType.number,
+              ),
+              SizedBox(height: 16),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: primaryColor.withOpacity(0.5)),
+                  color: Colors.white,
+                ),
+                child: DropdownButtonFormField<String>(
+                  value: selectedGender,
+                  decoration: InputDecoration(
+                    labelText: 'Gender',
+                    labelStyle: TextStyle(color: primaryColor),
+                    border: InputBorder.none,
+                    icon: Icon(Icons.people, color: primaryColor),
+                  ),
+                  items: genderOptions.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedGender = newValue!;
+                    });
+                  },
+                ),
+              ),
+              SizedBox(height: 24),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: secondaryColor,
+                  padding: EdgeInsets.symmetric(horizontal: 48, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 4,
+                ),
+                onPressed: addDoctor,
+                child: Text(
+                  'Add Doctor',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+    bool isPassword = false,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: primaryColor.withOpacity(0.5)),
+        color: Colors.white,
+      ),
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        obscureText: isPassword,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: primaryColor),
+          prefixIcon: Icon(icon, color: primaryColor),
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medicare/models/user_model.dart';
+import 'package:medicare/auth/login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   final UserModel user;
@@ -20,7 +21,54 @@ class ProfileScreen extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.edit, color: Colors.white),
             onPressed: () {
-              // Handle edit profile
+              // Tambahkan logika untuk mengedit profil di sini
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.logout, color: Colors.white),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    title: Text(
+                      'Konfirmasi Logout',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    content: Text(
+                      'Apakah Anda yakin ingin keluar?',
+                      style: TextStyle(
+                          color: const Color.fromARGB(220, 130, 138, 126)),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text(
+                          'Batal',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text(
+                          'Logout',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (context) => LoginScreen()),
+                            (Route<dynamic> route) => false,
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
         ],
@@ -162,18 +210,21 @@ class ProfileScreen extends StatelessWidget {
                             'Nomor Telepon',
                             '+62 812-3456-7890',
                           ),
+                          Divider(color: Colors.grey.shade300),
                           SizedBox(height: 20),
                           _buildInfoRow(
                             Icons.location_on,
                             'Alamat Praktik',
                             'Jl. KH Mustofa Bandung',
                           ),
+                          Divider(color: Colors.grey.shade300),
                           SizedBox(height: 20),
                           _buildInfoRow(
                             Icons.work,
                             'Pengalaman',
                             '10 Tahun',
                           ),
+                          Divider(color: Colors.grey.shade300),
                           SizedBox(height: 20),
                           _buildInfoRow(
                             Icons.star,
