@@ -226,7 +226,7 @@ class _PatientDashboardState extends State<PatientDashboard>
                           },
                           child: CircleAvatar(
                             backgroundColor: Colors.white,
-                            child: Icon(Icons.person, color: Colors.blue),
+                            child: Icon(Icons.person, color: const Color(0xFF2196F3)),
                           ),
                         )
                       ],

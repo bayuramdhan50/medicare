@@ -23,7 +23,7 @@ class MyAppointmentScreen extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.blue.shade100,
+                  Colors.blue.shade200,
                   Colors.white,
                 ],
               ),
@@ -34,41 +34,34 @@ class MyAppointmentScreen extends StatelessWidget {
           ClipPath(
             clipper: WaveClipper(),
             child: Container(
-              height: 200,
+              height: 180,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.blue.shade400, Colors.blue.shade800],
+                  colors: [const Color(0xFF2196F3), const Color(0xFF0D47A1)],
                 ),
               ),
               child: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
+                      Expanded(
+                        child: Text(
+                          'My Appointments',
+                          style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'My Appointments',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            user.name,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white.withOpacity(0.9),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        user.name,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
                       ),
                     ],
                   ),
@@ -80,7 +73,7 @@ class MyAppointmentScreen extends StatelessWidget {
           // Content
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.only(top: 80.0),
+              padding: const EdgeInsets.only(top: 130),
               child: Column(
                 children: [
                   Expanded(
@@ -97,32 +90,24 @@ class MyAppointmentScreen extends StatelessWidget {
 
                         if (snapshot.hasError) {
                           return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.error_outline,
-                                    size: 60, color: Colors.red),
-                                SizedBox(height: 16),
-                                Text('Error: ${snapshot.error}'),
-                              ],
+                            child: Text(
+                              'Error: ${snapshot.error}',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.redAccent,
+                              ),
                             ),
                           );
                         }
 
                         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                           return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.calendar_today_outlined,
-                                    size: 60, color: Colors.grey),
-                                SizedBox(height: 16),
-                                Text('No upcoming appointments',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.grey[600],
-                                    )),
-                              ],
+                            child: Text(
+                              'No upcoming appointments',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.grey[700],
+                              ),
                             ),
                           );
                         }
@@ -130,126 +115,120 @@ class MyAppointmentScreen extends StatelessWidget {
                         var appointments = snapshot.data!.docs;
 
                         return ListView.builder(
-                          padding: EdgeInsets.all(16),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           itemCount: appointments.length,
                           itemBuilder: (context, index) {
                             var appointment = appointments[index].data()
                                 as Map<String, dynamic>;
 
                             return Card(
-                              elevation: 4,
-                              margin: EdgeInsets.only(bottom: 16),
+                              elevation: 5,
+                              margin: EdgeInsets.only(bottom: 20),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
+                                borderRadius: BorderRadius.circular(18),
                               ),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
+                                  borderRadius: BorderRadius.circular(18),
                                   gradient: LinearGradient(
                                     colors: [
                                       Colors.white,
-                                      Colors.blue.shade50,
+                                      Colors.blue.shade100,
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Icon(Icons.calendar_month,
-                                              color: Colors.blue),
-                                          SizedBox(width: 8),
-                                          Text(
-                                            appointment['date'] ??
-                                                'Not specified',
+                                padding: const EdgeInsets.all(12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(Icons.calendar_today,
+                                            color: Colors.blue),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          appointment['date'] ??
+                                              'Not specified',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Divider(height: 20),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.access_time,
+                                            color: Colors.blue),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          appointment['time'] ??
+                                              'Not specified',
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.person, color: Colors.blue),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'Dr. ${appointment['doctor'] ?? 'Unknown'}',
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.info, color: Colors.blue),
+                                        SizedBox(width: 10),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 14, vertical: 6),
+                                          decoration: BoxDecoration(
+                                            color: _getStatusColor(
+                                                appointment['status']),
+                                            borderRadius:
+                                                BorderRadius.circular(22),
+                                          ),
+                                          child: Text(
+                                            appointment['status'] ?? 'Pending',
                                             style: TextStyle(
-                                              fontSize: 18,
+                                              color: Colors.white,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                        ],
-                                      ),
-                                      Divider(height: 24),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.access_time,
-                                              color: Colors.blue),
-                                          SizedBox(width: 8),
-                                          Text(
-                                            appointment['time'] ??
-                                                'Not specified',
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.medical_services,
-                                              color: Colors.blue),
-                                          SizedBox(width: 8),
-                                          Text(
-                                            'Dr. ${appointment['doctor'] ?? 'Unknown'}',
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.info_outline,
-                                              color: Colors.blue),
-                                          SizedBox(width: 8),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: _getStatusColor(
-                                                  appointment['status']),
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            child: Text(
-                                              appointment['status'] ??
-                                                  'Pending',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 16),
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            // Add functionality to view details
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.blue,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: 12,
-                                            ),
-                                          ),
-                                          child: Text('View Details'),
                                         ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 20),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          // Add functionality to view details
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.blue,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 12),
+                                        ),
+                                        child: Text('View Details',
+                                            style:
+                                                TextStyle(color: Colors.white)),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             );
@@ -259,10 +238,11 @@ class MyAppointmentScreen extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     child: SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: 60,
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
@@ -276,14 +256,15 @@ class MyAppointmentScreen extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                         ),
                         child: Text(
                           'Book New Appointment',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 19,
                             fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
                       ),

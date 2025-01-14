@@ -61,10 +61,6 @@ class PrescriptionScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
@@ -96,7 +92,7 @@ class PrescriptionScreen extends StatelessWidget {
           // Content
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.only(top: 80.0),
+              padding: const EdgeInsets.only(top: 200.0),
               child: StreamBuilder<QuerySnapshot>(
                 stream: _firestore
                     .collection('prescriptions')
@@ -210,7 +206,8 @@ class PrescriptionScreen extends StatelessWidget {
                                     SizedBox(
                                       width: double.infinity,
                                       child: ElevatedButton.icon(
-                                        icon: Icon(Icons.remove_red_eye),
+                                        icon: Icon(Icons.remove_red_eye,
+                                            color: Colors.white),
                                         label: Text('View Details'),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.blue,

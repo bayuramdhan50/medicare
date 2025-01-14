@@ -20,8 +20,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? selectedGender;
 
-  final Color primaryColor = Color(0xFF08A8B1); // Tosca
-  final Color secondaryColor = Color(0xFFF19E23); // Orange
+  final Color primaryColor = Color(0xFF2196F3); // Tosca
+  final Color secondaryColor = Color(0xFF0D47A1); // Orange
 
   @override
   void initState() {

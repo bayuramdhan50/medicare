@@ -41,7 +41,7 @@ class MedicalRecordsScreen extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.blue.shade50,
+                  Colors.blue.shade100,
                   Colors.white,
                 ],
               ),
@@ -52,41 +52,34 @@ class MedicalRecordsScreen extends StatelessWidget {
           ClipPath(
             clipper: WaveClipper(),
             child: Container(
-              height: 200,
+              height: 220,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.blue.shade400, Colors.blue.shade800],
+                  colors: [Colors.blue.shade300, Colors.blue.shade700],
                 ),
               ),
               child: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
+                      SizedBox(width: 10),
+                      Text(
+                        'Medical Records',
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Medical Records',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            user.name,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white.withOpacity(0.9),
-                            ),
-                          ),
-                        ],
+                      Spacer(),
+                      Text(
+                        user.name,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white.withOpacity(0.85),
+                        ),
                       ),
                     ],
                   ),
@@ -98,7 +91,7 @@ class MedicalRecordsScreen extends StatelessWidget {
           // Content
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.only(top: 80.0),
+              padding: const EdgeInsets.only(top: 180),
               child: StreamBuilder<QuerySnapshot>(
                 stream: _firestore
                     .collection('medicalRecords')
@@ -115,37 +108,21 @@ class MedicalRecordsScreen extends StatelessWidget {
 
                   if (snapshot.hasError) {
                     return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.error_outline,
-                              size: 60, color: Colors.red),
-                          SizedBox(height: 16),
-                          Text(
-                            'Error: ${snapshot.error}',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ],
+                      child: Text(
+                        'Error: ${snapshot.error}',
+                        style: TextStyle(color: Colors.red, fontSize: 20),
                       ),
                     );
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.medical_information,
-                              size: 60, color: Colors.grey),
-                          SizedBox(height: 16),
-                          Text(
-                            'No medical records available',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        'No medical records available',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.grey[600],
+                        ),
                       ),
                     );
                   }
@@ -160,22 +137,22 @@ class MedicalRecordsScreen extends StatelessWidget {
                           records[index].data() as Map<String, dynamic>;
 
                       return Card(
-                        elevation: 4,
-                        margin: EdgeInsets.only(bottom: 16),
+                        elevation: 5,
+                        margin: EdgeInsets.only(bottom: 20),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         child: Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(20),
                             gradient: LinearGradient(
-                              colors: [Colors.white, Colors.blue.shade50],
+                              colors: [Colors.white, Colors.blue.shade100],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(20.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -183,35 +160,35 @@ class MedicalRecordsScreen extends StatelessWidget {
                                   children: [
                                     Icon(Icons.calendar_today,
                                         color: Colors.blue),
-                                    SizedBox(width: 8),
+                                    SizedBox(width: 10),
                                     Text(
                                       record['date'] ?? 'Not specified',
                                       style: TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ],
                                 ),
-                                Divider(height: 24),
+                                Divider(height: 30),
                                 _buildInfoRow(
                                   Icons.medical_services,
                                   'Diagnosis',
                                   record['diagnosis'] ?? 'Not specified',
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(height: 15),
                                 _buildInfoRow(
                                   Icons.healing,
                                   'Treatment',
                                   record['treatment'] ?? 'Not specified',
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(height: 15),
                                 _buildInfoRow(
                                   Icons.note,
                                   'Notes',
                                   record['notes'] ?? 'Not specified',
                                 ),
-                                SizedBox(height: 12),
+                                SizedBox(height: 20),
                                 FutureBuilder<String>(
                                   future:
                                       getDoctorName(record['doctorId'] ?? ''),
@@ -223,7 +200,7 @@ class MedicalRecordsScreen extends StatelessWidget {
                                     );
                                   },
                                 ),
-                                SizedBox(height: 16),
+                                SizedBox(height: 20),
                                 SizedBox(
                                   width: double.infinity,
                                   child: ElevatedButton(
@@ -233,12 +210,14 @@ class MedicalRecordsScreen extends StatelessWidget {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blue,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius: BorderRadius.circular(15),
                                       ),
                                       padding:
-                                          EdgeInsets.symmetric(vertical: 12),
+                                          EdgeInsets.symmetric(vertical: 15),
                                     ),
-                                    child: Text('View Details'),
+                                    child: Text('View Details',
+                                        style: TextStyle(
+                                            fontSize: 18, color: Colors.white)),
                                   ),
                                 ),
                               ],
@@ -262,7 +241,7 @@ class MedicalRecordsScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, color: Colors.blue),
-        SizedBox(width: 8),
+        SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,15 +249,15 @@ class MedicalRecordsScreen extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
+                  fontSize: 16,
+                  color: Colors.grey[700],
                 ),
               ),
-              SizedBox(height: 4),
+              SizedBox(height: 5),
               Text(
                 value,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                   color: Colors.black87,
                 ),
               ),
@@ -294,16 +273,16 @@ class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = Path();
-    path.lineTo(0, size.height - 40);
+    path.lineTo(0, size.height - 50);
 
     var firstControlPoint = Offset(size.width / 4, size.height);
-    var firstEndPoint = Offset(size.width / 2.25, size.height - 30);
+    var firstEndPoint = Offset(size.width / 2.25, size.height - 40);
     path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
         firstEndPoint.dx, firstEndPoint.dy);
 
     var secondControlPoint =
-        Offset(size.width - (size.width / 3.25), size.height - 65);
-    var secondEndPoint = Offset(size.width, size.height - 40);
+        Offset(size.width - (size.width / 3.25), size.height - 75);
+    var secondEndPoint = Offset(size.width, size.height - 50);
     path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
         secondEndPoint.dx, secondEndPoint.dy);
 

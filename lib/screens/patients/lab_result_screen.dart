@@ -18,13 +18,11 @@ class LabResultScreen extends StatelessWidget {
           .limit(1)
           .get();
 
-      if (docSnapshot.docs.isNotEmpty) {
-        return docSnapshot.docs.first.data()['name'] ?? 'Unknown Doctor';
-      } else {
-        return 'Unknown Doctor';
-      }
+      return docSnapshot.docs.isNotEmpty
+          ? docSnapshot.docs.first.data()['name'] ?? 'Dokter Tidak Dikenal'
+          : 'Dokter Tidak Dikenal';
     } catch (e) {
-      return 'Unknown Doctor';
+      return 'Dokter Tidak Dikenal';
     }
   }
 
@@ -33,7 +31,6 @@ class LabResultScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Background gradient
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -43,8 +40,6 @@ class LabResultScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Header dengan wave clipper
           ClipPath(
             clipper: WaveClipper(),
             child: Container(
@@ -68,7 +63,7 @@ class LabResultScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Lab Results',
+                            'Hasil Lab',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -90,11 +85,9 @@ class LabResultScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Content
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.only(top: 80.0),
+              padding: const EdgeInsets.only(top: 180.0),
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('lab_results')
@@ -111,37 +104,21 @@ class LabResultScreen extends StatelessWidget {
 
                   if (snapshot.hasError) {
                     return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.error_outline,
-                              size: 60, color: Colors.red),
-                          SizedBox(height: 16),
-                          Text(
-                            'Error: ${snapshot.error}',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ],
+                      child: Text(
+                        'Error: ${snapshot.error}',
+                        style: TextStyle(color: Colors.red),
                       ),
                     );
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.science_outlined,
-                              size: 60, color: Colors.grey),
-                          SizedBox(height: 16),
-                          Text(
-                            'No lab results available',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        'Tidak ada hasil lab yang tersedia',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey[600],
+                        ),
                       ),
                     );
                   }
@@ -159,7 +136,7 @@ class LabResultScreen extends StatelessWidget {
                         future: getDoctorName(labResult['doctorUid'] ?? ''),
                         builder: (context, doctorSnapshot) {
                           String doctorName =
-                              doctorSnapshot.data ?? 'Unknown Doctor';
+                              doctorSnapshot.data ?? 'Dokter Tidak Dikenal';
 
                           return Card(
                             elevation: 4,
@@ -188,7 +165,7 @@ class LabResultScreen extends StatelessWidget {
                                         Expanded(
                                           child: Text(
                                             labResult['testName'] ??
-                                                'Unknown Test',
+                                                'Tes Tidak Dikenal',
                                             style: TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold,
@@ -200,14 +177,14 @@ class LabResultScreen extends StatelessWidget {
                                     Divider(height: 24),
                                     _buildInfoRow(
                                       Icons.calendar_today,
-                                      'Date',
+                                      'Tanggal',
                                       labResult['date'] ?? '-',
                                     ),
                                     SizedBox(height: 12),
                                     _buildInfoRow(
                                       Icons.analytics,
-                                      'Result',
-                                      labResult['result'] ?? 'Pending',
+                                      'Hasil',
+                                      labResult['result'] ?? 'Menunggu',
                                     ),
                                     SizedBox(height: 12),
                                     Row(
@@ -227,7 +204,7 @@ class LabResultScreen extends StatelessWidget {
                                                 BorderRadius.circular(20),
                                           ),
                                           child: Text(
-                                            labResult['status'] ?? 'Pending',
+                                            labResult['status'] ?? 'Menunggu',
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
@@ -239,15 +216,18 @@ class LabResultScreen extends StatelessWidget {
                                     SizedBox(height: 12),
                                     _buildInfoRow(
                                       Icons.person,
-                                      'Doctor',
+                                      'Dokter',
                                       doctorName,
                                     ),
                                     SizedBox(height: 16),
                                     SizedBox(
                                       width: double.infinity,
                                       child: ElevatedButton.icon(
-                                        icon: Icon(Icons.remove_red_eye),
-                                        label: Text('View Details'),
+                                        icon: Icon(
+                                          Icons.remove_red_eye,
+                                          color: Colors.white,
+                                        ),
+                                        label: Text('Lihat Detail'),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.blue,
                                           foregroundColor: Colors.white,

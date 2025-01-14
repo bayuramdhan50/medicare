@@ -14,11 +14,10 @@ class BookAppointmentScreen extends StatefulWidget {
 
 class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  String? selectedDoctorName; // Displayed name of the doctor
-  String? selectedDoctorUid; // UID of the selected doctor
+  String? selectedDoctorName;
+  String? selectedDoctorUid;
   DateTime? selectedDateTime;
-  List<Map<String, String>> doctors =
-      []; // List to store doctor UID and name pairs
+  List<Map<String, String>> doctors = [];
 
   @override
   void initState() {
@@ -26,7 +25,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     _loadDoctors();
   }
 
-  // Fungsi untuk mengambil daftar dokter dari Firestore
   Future<void> _loadDoctors() async {
     try {
       QuerySnapshot snapshot = await _firestore
@@ -34,23 +32,22 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           .where('role', isEqualTo: 'doctor')
           .get();
 
-      List<Map<String, String>> loadedDoctors = []; // Updated to a list of maps
+      List<Map<String, String>> loadedDoctors = [];
       snapshot.docs.forEach((doc) {
         loadedDoctors.add({
-          'name': doc['name'], // Store doctor name
-          'uid': doc['uid'], // Store doctor UID
+          'name': doc['name'],
+          'uid': doc['uid'],
         });
       });
 
       setState(() {
-        doctors = loadedDoctors; // Assign the list of maps
+        doctors = loadedDoctors;
       });
     } catch (e) {
       print("Error loading doctors: $e");
     }
   }
 
-  // Function to select date and time for the appointment
   Future<void> _selectDateTime(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -79,7 +76,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     }
   }
 
-  // Function to book the appointment
   Future<void> _bookAppointment() async {
     if (selectedDoctorUid == null || selectedDateTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -88,7 +84,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       return;
     }
 
-    // Format the selected date and time
     String formattedDate =
         "${selectedDateTime!.year}-${selectedDateTime!.month.toString().padLeft(2, '0')}-${selectedDateTime!.day.toString().padLeft(2, '0')}";
     String formattedTime =
@@ -97,14 +92,13 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     try {
       await _firestore.collection('appointments').add({
         'patientId': widget.user.uid,
-        'doctorUid': selectedDoctorUid, // Store the doctor's UID
-        'doctor': selectedDoctorName, // Store the doctor's name
+        'doctorUid': selectedDoctorUid,
+        'doctor': selectedDoctorName,
         'date': formattedDate,
         'time': formattedTime,
         'status': 'Pending',
       });
 
-      // Tambahkan notifikasi untuk pasien
       await FirebaseFirestore.instance.collection('notifications').add({
         'userId': widget.user.uid,
         'title': 'Appointment Berhasil Dibuat',
@@ -114,7 +108,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         'isRead': false,
       });
 
-      // Tambahkan notifikasi untuk dokter
       await FirebaseFirestore.instance.collection('notifications').add({
         'userId': selectedDoctorUid,
         'title': 'Appointment Baru',
@@ -130,7 +123,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         SnackBar(content: Text('Appointment booked successfully!')),
       );
 
-      Navigator.pop(context); // Go back to the previous screen
+      Navigator.pop(context);
     } catch (e) {
       print('Error creating appointment and notifications: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -149,7 +142,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       child: Scaffold(
         body: Stack(
           children: [
-            // Background gradient
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -162,8 +154,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                 ),
               ),
             ),
-
-            // Header dengan wave clipper
             ClipPath(
               clipper: WaveClipper(),
               child: Container(
@@ -178,10 +168,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-                          onPressed: () => Navigator.pop(context),
-                        ),
                         Text(
                           'Book Appointment',
                           style: TextStyle(
@@ -196,8 +182,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                 ),
               ),
             ),
-
-            // Content
             SafeArea(
               child: SingleChildScrollView(
                 padding: EdgeInsets.only(top: 100),
@@ -205,7 +189,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      // Doctor selection card
                       Card(
                         elevation: 4,
                         shape: RoundedRectangleBorder(
@@ -271,10 +254,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                           ),
                         ),
                       ),
-
                       SizedBox(height: 20),
-
-                      // Date & Time selection card
                       Card(
                         elevation: 4,
                         shape: RoundedRectangleBorder(
@@ -308,7 +288,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                                     selectedDateTime == null
                                         ? 'Pick Date and Time'
                                         : '${selectedDateTime!.toLocal().toString().split('.')[0]}',
-                                    style: TextStyle(fontSize: 16),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: const Color.fromARGB(
+                                            255, 36, 37, 37)),
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     padding: EdgeInsets.symmetric(vertical: 12),
@@ -323,10 +306,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                           ),
                         ),
                       ),
-
                       SizedBox(height: 30),
-
-                      // Book button
                       Container(
                         width: double.infinity,
                         height: 50,
@@ -334,7 +314,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                           onPressed: _bookAppointment,
                           child: Text(
                             'Book Appointment',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(fontSize: 18, color: Colors.white),
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
@@ -356,7 +336,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   }
 }
 
-// Tambahkan class WaveClipper untuk membuat efek wave pada header
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {

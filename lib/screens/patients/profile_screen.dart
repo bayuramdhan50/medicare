@@ -5,13 +5,14 @@ import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final UserModel user;
-  final onProfileUpdated;
+  final Function onProfileUpdated;
   final Function onLogout;
 
-  ProfileScreen(
-      {required this.user,
-      required this.onProfileUpdated,
-      required this.onLogout});
+  ProfileScreen({
+    required this.user,
+    required this.onProfileUpdated,
+    required this.onLogout,
+  });
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -20,11 +21,16 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Define consistent colors
+  final Color primaryBlue = Color(0xFF54A4FF);
+  final Color darkBlue = Color.fromARGB(255, 124, 176, 255);
+  final Color lightBlue = Color(0xFF2196F3);
+  final Color accentBlue = Color(0xFF42A5F5);
+
   Future<UserModel?> _fetchUserData() async {
     try {
       DocumentSnapshot userDoc =
           await _firestore.collection('users').doc(widget.user.uid).get();
-
       if (userDoc.exists) {
         return UserModel.fromMap(userDoc.data() as Map<String, dynamic>);
       }
@@ -43,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF08A8B1)),
+                valueColor: AlwaysStoppedAnimation<Color>(primaryBlue),
               ),
             );
           }
@@ -53,11 +59,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 60, color: Colors.red),
+                  Icon(Icons.error_outline, size: 60, color: Colors.red[700]),
                   SizedBox(height: 16),
                   Text(
                     "Failed to load profile",
-                    style: TextStyle(fontSize: 18, color: Colors.red),
+                    style: TextStyle(fontSize: 18, color: Colors.red[700]),
                   ),
                 ],
               ),
@@ -68,35 +74,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           return Stack(
             children: [
+              // Enhanced Background Gradient
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Color(0xFF08A8B1),
-                      Color(0xFF08A8B1).withOpacity(0.7)
+                      darkBlue,
+                      primaryBlue,
+                      lightBlue.withOpacity(0.8),
                     ],
+                    stops: [0.0, 0.5, 1.0],
                   ),
                 ),
               ),
+
+              // Main Content
               SafeArea(
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
+                      // Header Section
                       Container(
                         padding:
                             EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                         child: Column(
                           children: [
+                            // Enhanced Profile Picture
                             Container(
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black26,
-                                    blurRadius: 10,
-                                    offset: Offset(0, 5),
+                                    color: darkBlue.withOpacity(0.3),
+                                    blurRadius: 15,
+                                    offset: Offset(0, 8),
                                   ),
                                 ],
                               ),
@@ -106,11 +119,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: Icon(
                                   Icons.person,
                                   size: 70,
-                                  color: Color(0xFF08A8B1),
+                                  color: primaryBlue,
                                 ),
                               ),
                             ),
                             SizedBox(height: 20),
+                            // Enhanced User Name
                             Text(
                               user.name,
                               style: TextStyle(
@@ -119,23 +133,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Colors.white,
                                 shadows: [
                                   Shadow(
-                                    color: Colors.black26,
-                                    blurRadius: 2,
+                                    color: darkBlue.withOpacity(0.5),
+                                    blurRadius: 4,
                                     offset: Offset(0, 2),
                                   ),
                                 ],
                               ),
                             ),
                             SizedBox(height: 8),
+                            // Enhanced User Email
                             Text(
                               user.email,
                               style: TextStyle(
                                 fontSize: 18,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withOpacity(0.95),
                                 shadows: [
                                   Shadow(
-                                    color: Colors.black26,
-                                    blurRadius: 2,
+                                    color: darkBlue.withOpacity(0.3),
+                                    blurRadius: 3,
                                     offset: Offset(0, 1),
                                   ),
                                 ],
@@ -144,6 +159,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       ),
+
+                      // Enhanced Information Section
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
@@ -154,9 +171,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 10,
-                              offset: Offset(0, -5),
+                              color: darkBlue.withOpacity(0.2),
+                              blurRadius: 15,
+                              offset: Offset(0, -8),
                             ),
                           ],
                         ),
@@ -165,22 +182,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // Section Title
                               Row(
                                 children: [
                                   Icon(Icons.person_pin,
-                                      color: Color(0xFF08A8B1), size: 30),
+                                      color: primaryBlue, size: 30),
                                   SizedBox(width: 10),
                                   Text(
                                     'Personal Information',
                                     style: TextStyle(
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
+                                      color: darkBlue,
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 15),
+                              SizedBox(height: 20),
+
+                              // Info Cards
                               _buildInfoCard(
                                 icon: Icons.calendar_today,
                                 title: 'Age',
@@ -196,11 +216,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 title: 'Role',
                                 subtitle: user.role,
                               ),
-                              SizedBox(height: 15),
+
+                              SizedBox(height: 20),
+
+                              // Enhanced Edit Profile Button
                               SizedBox(
                                 width: double.infinity,
                                 height: 55,
                                 child: ElevatedButton.icon(
+                                  icon: Icon(Icons.edit, color: Colors.white),
                                   label: Text('Edit Profile',
                                       style: TextStyle(
                                         fontSize: 18,
@@ -221,19 +245,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     );
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF08A8B1),
+                                    backgroundColor: primaryBlue,
                                     elevation: 3,
+                                    shadowColor: primaryBlue.withOpacity(0.5),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15),
                                     ),
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 10),
+
+                              SizedBox(height: 15),
+
+                              // Enhanced Logout Button
                               SizedBox(
                                 width: double.infinity,
                                 height: 55,
                                 child: ElevatedButton.icon(
+                                  icon: Icon(Icons.logout, color: Colors.white),
                                   label: Text('Logout',
                                       style: TextStyle(
                                         fontSize: 18,
@@ -241,11 +270,170 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         color: Colors.white,
                                       )),
                                   onPressed: () {
-                                    widget.onLogout();
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Dialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(25),
+                                          ),
+                                          elevation: 10,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(25),
+                                              gradient: LinearGradient(
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                                colors: [
+                                                  Color(0xFF42A5F5),
+                                                  Color(0xFF2196F3),
+                                                ],
+                                              ),
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  // Header Icon
+                                                  Container(
+                                                    padding: EdgeInsets.all(15),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white
+                                                          .withOpacity(0.2),
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.exit_to_app,
+                                                      color: Colors.white,
+                                                      size: 50,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 20),
+
+                                                  // Title
+                                                  Text(
+                                                    'Konfirmasi Logout',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 24,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                  SizedBox(height: 15),
+
+                                                  // Content
+                                                  Text(
+                                                    'Apakah Anda yakin ingin keluar dari aplikasi?',
+                                                    style: TextStyle(
+                                                      color: Colors.white70,
+                                                      fontSize: 16,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                  SizedBox(height: 25),
+
+                                                  // Action Buttons
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      // Cancel Button
+                                                      Expanded(
+                                                        child: OutlinedButton(
+                                                          style: OutlinedButton
+                                                              .styleFrom(
+                                                            side: BorderSide(
+                                                                color: Colors
+                                                                    .white,
+                                                                width: 2),
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                                    vertical:
+                                                                        12),
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15),
+                                                            ),
+                                                          ),
+                                                          onPressed: () =>
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(),
+                                                          child: Text(
+                                                            'Batal',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 15),
+
+                                                      // Logout Button
+                                                      Expanded(
+                                                        child: ElevatedButton(
+                                                          style: ElevatedButton
+                                                              .styleFrom(
+                                                            backgroundColor:
+                                                                Colors.white,
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                                    vertical:
+                                                                        12),
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15),
+                                                            ),
+                                                          ),
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                            widget.onLogout();
+                                                          },
+                                                          child: Text(
+                                                            'Logout',
+                                                            style: TextStyle(
+                                                              color: Color(
+                                                                  0xFF2196F3),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red.shade600,
+                                    backgroundColor: Colors.red[700],
                                     elevation: 3,
+                                    shadowColor: Colors.red.withOpacity(0.3),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15),
                                     ),
@@ -267,19 +455,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildInfoCard(
-      {required IconData icon,
-      required String title,
-      required String subtitle}) {
+  // Enhanced Info Card Widget
+  Widget _buildInfoCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
     return Card(
       elevation: 4,
       margin: EdgeInsets.only(bottom: 20),
+      shadowColor: primaryBlue.withOpacity(0.2),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
-            colors: [Colors.white, Color(0xFF08A8B1).withOpacity(0.1)],
+            colors: [
+              Colors.white,
+              accentBlue.withOpacity(0.1),
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -288,22 +482,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: EdgeInsets.all(20),
           child: Row(
             children: [
+              // Enhanced Icon Container
               Container(
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Color(0xFF08A8B1).withOpacity(0.2),
+                  color: lightBlue.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0xFF08A8B1).withOpacity(0.3),
+                      color: primaryBlue.withOpacity(0.2),
                       blurRadius: 8,
                       offset: Offset(0, 3),
                     ),
                   ],
                 ),
-                child: Icon(icon, color: Color(0xFF08A8B1), size: 28),
+                child: Icon(icon, color: primaryBlue, size: 28),
               ),
               SizedBox(width: 20),
+              // Enhanced Text Content
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,7 +508,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title,
                       style: TextStyle(
                         fontSize: 16,
-                        color: Color(0xFFF19E23),
+                        color: Colors.black87,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -322,7 +518,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF08A8B1),
+                        color: darkBlue,
                       ),
                     ),
                   ],

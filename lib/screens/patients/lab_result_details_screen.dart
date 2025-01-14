@@ -15,13 +15,11 @@ class LabResultDetailScreen extends StatelessWidget {
           .limit(1)
           .get();
 
-      if (docSnapshot.docs.isNotEmpty) {
-        return docSnapshot.docs.first.data()['name'] ?? 'Unknown Doctor';
-      } else {
-        return 'Unknown Doctor';
-      }
+      return docSnapshot.docs.isNotEmpty
+          ? docSnapshot.docs.first.data()['name'] ?? 'Dokter Tidak Dikenal'
+          : 'Dokter Tidak Dikenal';
     } catch (e) {
-      return 'Unknown Doctor';
+      return 'Dokter Tidak Dikenal';
     }
   }
 
@@ -30,7 +28,6 @@ class LabResultDetailScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Background gradient
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -40,20 +37,18 @@ class LabResultDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Header dengan wave clipper
           ClipPath(
             clipper: WaveClipper(),
             child: Container(
               height: 200,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.blue.shade400, Colors.blue.shade800],
+                  colors: [const Color(0xFF42A5F5), const Color(0xFF1565C0)],
                 ),
               ),
               child: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(15.0),
                   child: Row(
                     children: [
                       IconButton(
@@ -61,7 +56,7 @@ class LabResultDetailScreen extends StatelessWidget {
                         onPressed: () => Navigator.pop(context),
                       ),
                       Text(
-                        'Lab Result Details',
+                        'Detail Hasil Lab',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -74,12 +69,10 @@ class LabResultDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Content
           SafeArea(
             child: SingleChildScrollView(
               padding:
-                  EdgeInsets.only(top: 100, left: 16, right: 16, bottom: 16),
+                  EdgeInsets.only(top: 160, left: 16, right: 16, bottom: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -103,19 +96,19 @@ class LabResultDetailScreen extends StatelessWidget {
                         children: [
                           _buildHeaderWithIcon(
                             Icons.science,
-                            labResult['testName'] ?? 'Unknown Test',
+                            labResult['testName'] ?? 'Tes Tidak Diketahui',
                           ),
                           Divider(height: 24),
                           _buildInfoRow(
                             Icons.calendar_today,
-                            'Test Date',
-                            labResult['date'] ?? 'Not specified',
+                            'Tanggal Tes',
+                            labResult['date'] ?? 'Tidak ditentukan',
                           ),
                           SizedBox(height: 16),
                           _buildInfoRow(
                             Icons.analytics,
-                            'Test Result',
-                            labResult['result'] ?? 'Not available',
+                            'Hasil Tes',
+                            labResult['result'] ?? 'Tidak tersedia',
                           ),
                           SizedBox(height: 16),
                           Row(
@@ -132,7 +125,7 @@ class LabResultDetailScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
-                                  labResult['status'] ?? 'Pending',
+                                  labResult['status'] ?? 'Menunggu',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -169,15 +162,15 @@ class LabResultDetailScreen extends StatelessWidget {
                             builder: (context, snapshot) {
                               return _buildInfoRow(
                                 Icons.person,
-                                'Attending Doctor',
-                                snapshot.data ?? 'Loading...',
+                                'Dokter yang Menghadiri',
+                                snapshot.data ?? 'Memuat...',
                               );
                             },
                           ),
                           SizedBox(height: 16),
                           _buildHeaderWithIcon(
                             Icons.note,
-                            'Doctor Notes',
+                            'Catatan Dokter',
                           ),
                           SizedBox(height: 8),
                           Container(
@@ -189,7 +182,8 @@ class LabResultDetailScreen extends StatelessWidget {
                               border: Border.all(color: Colors.blue.shade100),
                             ),
                             child: Text(
-                              labResult['notes'] ?? 'No additional notes.',
+                              labResult['notes'] ??
+                                  'Tidak ada catatan tambahan.',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.black87,
@@ -204,8 +198,8 @@ class LabResultDetailScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      icon: Icon(Icons.print),
-                      label: Text('Download Report'),
+                      icon: Icon(Icons.print, color: Colors.white),
+                      label: Text('Unduh Laporan'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
@@ -215,7 +209,7 @@ class LabResultDetailScreen extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        // Add download functionality
+                        // Tambahkan fungsionalitas unduh
                       },
                     ),
                   ),
