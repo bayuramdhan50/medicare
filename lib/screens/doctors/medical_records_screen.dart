@@ -320,7 +320,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.blue.shade50, Colors.white],
+                colors: [Color(0xFF008000).withOpacity(0.1), Colors.white],
               ),
             ),
           ),
@@ -332,7 +332,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
               height: 200,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.blue.shade400, Colors.blue.shade800],
+                  colors: [Color(0xFF008000), Color(0xFF38B000)],
                 ),
               ),
               child: SafeArea(
@@ -364,7 +364,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                       FloatingActionButton(
                         onPressed: () => _showAddRecordDialog(context),
                         backgroundColor: Colors.white,
-                        child: Icon(Icons.add, color: Colors.blue),
+                        child: Icon(Icons.add, color: Color(0xFF008000)),
                         mini: true,
                       ),
                     ],
@@ -536,7 +536,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: Colors.blue),
+        Icon(icon, color: Color(0xFF008000)),
         SizedBox(width: 8),
         Expanded(
           child: Column(

@@ -107,11 +107,14 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
               } else {
                 // Informasi bahwa pasien harus dipilih
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Please select a patient')),
+                  SnackBar(
+                    content: Text('Please select a patient'),
+                    backgroundColor: Color(0xFF008000),
+                  ),
                 );
               }
             },
-            child: Text('Add'),
+            child: Text('Add', style: TextStyle(color: Color(0xFF008000))),
           ),
         ],
       ),
@@ -129,7 +132,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.blue.shade50, Colors.white],
+                colors: [Color(0xFF008000).withOpacity(0.1), Colors.white],
               ),
             ),
           ),
@@ -141,7 +144,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
               height: 200,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.blue.shade400, Colors.blue.shade800],
+                  colors: [Color(0xFF008000), Color(0xFF38B000)],
                 ),
               ),
               child: SafeArea(
@@ -173,7 +176,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                       FloatingActionButton(
                         onPressed: _showAddPrescriptionDialog,
                         backgroundColor: Colors.white,
-                        child: Icon(Icons.add, color: Colors.blue),
+                        child: Icon(Icons.add, color: Color(0xFF008000)),
                         mini: true,
                       ),
                     ],
@@ -234,7 +237,10 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
                             gradient: LinearGradient(
-                              colors: [Colors.white, Colors.blue.shade50],
+                              colors: [
+                                Colors.white,
+                                Color(0xFF008000).withOpacity(0.1)
+                              ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
@@ -347,7 +353,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: Colors.blue),
+        Icon(icon, size: 20, color: Color(0xFF008000)),
         SizedBox(width: 8),
         Expanded(
           child: Column(

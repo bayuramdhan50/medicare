@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
             end: Alignment.bottomCenter,
             colors: [
               Color.fromARGB(255, 255, 255, 255),
-              Color(0xFF08A8B1).withOpacity(0.8),
+              Color(0xFF00B4D8).withOpacity(0.8),
             ],
           ),
         ),
@@ -136,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFF19E23),
+                    color: Color(0xFF0077B6),
                   ),
                 ),
                 SizedBox(height: 1),
@@ -144,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   "Silakan masuk ke akun Anda",
                   style: TextStyle(
                     fontSize: 16,
-                    color: Color(0xFFF19E23),
+                    color: Color(0xFF0077B6),
                   ),
                 ),
                 SizedBox(height: 20),
@@ -198,17 +198,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Text(
                             "Lupa Password?",
                             style: TextStyle(
-                              color: Color(0xFFF19E23),
+                              color: Color(0xFF0077B6),
                             ),
                           ),
                         ),
                       ),
                       SizedBox(height: 20),
                       CustomButton(
-                        text: "Login",
+                        text: "Masuk",
                         onPressed: () => _verifyLogin(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFF19E23),
+                          backgroundColor: Color(0xFF0077B6),
+                          foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(
                               vertical: 13, horizontal: 30),
                           shape: RoundedRectangleBorder(
@@ -236,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           TextSpan(
                             text: "Daftar",
                             style: TextStyle(
-                              color: Color(0xFFF19E23),
+                              color: Color.fromARGB(255, 255, 255, 255),
                               fontWeight: FontWeight.bold,
                             ),
                           ),

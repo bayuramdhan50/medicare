@@ -22,10 +22,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Define consistent colors
-  final Color primaryBlue = Color(0xFF54A4FF);
-  final Color darkBlue = Color.fromARGB(255, 124, 176, 255);
-  final Color lightBlue = Color(0xFF2196F3);
-  final Color accentBlue = Color(0xFF42A5F5);
+  final Color primaryBlue = Color(0xFF0077B6);
+  final Color darkBlue = Color(0xFF00B4D8);
+  final Color lightBlue = Color(0xFF0077B6).withOpacity(0.8);
+  final Color accentBlue = Color(0xFF00B4D8);
 
   Future<UserModel?> _fetchUserData() async {
     try {

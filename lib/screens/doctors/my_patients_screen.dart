@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medicare/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:medicare/screens/doctors/app_color.dart';
 
 class MyPatientsScreen extends StatelessWidget {
   final UserModel user;
@@ -16,7 +17,7 @@ class MyPatientsScreen extends StatelessWidget {
           'Daftar Pasien',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        backgroundColor: const Color.fromARGB(255, 98, 161, 255),
+        backgroundColor: AppColors.primaryGreen,
         elevation: 0,
       ),
       body: Container(
@@ -24,7 +25,7 @@ class MyPatientsScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.blue.shade400, Colors.blue.shade800],
+            colors: [AppColors.primaryGreen, AppColors.secondaryGreen],
           ),
         ),
         child: StreamBuilder<QuerySnapshot>(
@@ -132,11 +133,12 @@ class MyPatientsScreen extends StatelessWidget {
                             EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         leading: CircleAvatar(
                           radius: 30,
-                          backgroundColor: Colors.blue.shade100,
+                          backgroundColor:
+                              AppColors.primaryGreen.withOpacity(0.2),
                           child: Icon(
                             Icons.person,
                             size: 35,
-                            color: Colors.blue.shade700,
+                            color: AppColors.primaryGreen,
                           ),
                         ),
                         title: Text(
@@ -144,7 +146,7 @@ class MyPatientsScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue.shade800,
+                            color: AppColors.primaryGreen,
                           ),
                         ),
                         subtitle: Column(

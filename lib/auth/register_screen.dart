@@ -93,7 +93,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             end: Alignment.bottomCenter,
             colors: [
               Color.fromARGB(255, 255, 255, 255),
-              Color(0xFF08A8B1).withOpacity(0.8),
+              Color(0xFF0077B6).withOpacity(0.8),
             ],
           ),
         ),
@@ -122,7 +122,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFF19E23),
+                    color: Color(0xFF0077B6),
                   ),
                 ),
                 SizedBox(height: 1),
@@ -130,7 +130,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   "Silakan lengkapi data diri Anda",
                   style: TextStyle(
                     fontSize: 16,
-                    color: Color(0xFFF19E23),
+                    color: Color(0xFF0077B6),
                   ),
                 ),
                 SizedBox(height: 15),
@@ -214,7 +214,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         text: "Daftar",
                         onPressed: () => registerUser(),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFF19E23),
+                          backgroundColor: Color(0xFF0077B6),
+                          foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(
                               vertical: 13, horizontal: 23),
                           shape: RoundedRectangleBorder(
@@ -237,7 +238,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           TextSpan(
                             text: "Masuk",
                             style: TextStyle(
-                              color: Color(0xFFF19E23),
+                              color: Color.fromARGB(255, 255, 255, 255),
                               fontWeight: FontWeight.bold,
                             ),
                           ),

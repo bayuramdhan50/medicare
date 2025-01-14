@@ -213,7 +213,7 @@ class _LabResultsScreenState extends State<LabResultsScreen> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.blue.shade50, Colors.white],
+                colors: [Color(0xFF008000).withOpacity(0.1), Colors.white],
               ),
             ),
           ),
@@ -225,7 +225,7 @@ class _LabResultsScreenState extends State<LabResultsScreen> {
               height: 200,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.blue.shade400, Colors.blue.shade800],
+                  colors: [Color(0xFF008000), Color(0xFF38B000)],
                 ),
               ),
               child: SafeArea(
@@ -444,13 +444,13 @@ class _LabResultsScreenState extends State<LabResultsScreen> {
     Color color;
     switch (status.toLowerCase()) {
       case 'completed':
-        color = Colors.green;
+        color = Color(0xFF008000);
         break;
       case 'reviewed':
-        color = Colors.orange;
+        color = Color(0xFF38B000);
         break;
       default:
-        color = Colors.blue;
+        color = Colors.green.shade700;
     }
 
     return Container(
@@ -473,7 +473,7 @@ class _LabResultsScreenState extends State<LabResultsScreen> {
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, color: Colors.blue, size: 20),
+        Icon(icon, color: Color(0xFF008000), size: 20),
         SizedBox(width: 8),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,

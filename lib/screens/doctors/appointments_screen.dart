@@ -59,7 +59,7 @@ class AppointmentsScreen extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.blue.shade50, Colors.white],
+                colors: [Color(0xFF008000).withOpacity(0.1), Colors.white],
               ),
             ),
           ),
@@ -71,7 +71,7 @@ class AppointmentsScreen extends StatelessWidget {
               height: 200,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.blue.shade400, Colors.blue.shade800],
+                  colors: [Color(0xFF008000), Color(0xFF38B000)],
                 ),
               ),
               child: SafeArea(
@@ -115,7 +115,8 @@ class AppointmentsScreen extends StatelessWidget {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            const Color.fromARGB(255, 0, 0, 0)),
                       ),
                     );
                   }
@@ -140,7 +141,8 @@ class AppointmentsScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.calendar_today,
-                              size: 60, color: Colors.grey),
+                              size: 60,
+                              color: const Color.fromARGB(255, 255, 255, 255)),
                           SizedBox(height: 16),
                           Text('No appointments found.'),
                         ],
@@ -198,13 +200,13 @@ class AppointmentsScreen extends StatelessWidget {
     Color statusColor;
     switch (appointment['status']?.toLowerCase()) {
       case 'completed':
-        statusColor = Colors.green;
+        statusColor = Color(0xFF008000);
         break;
       case 'cancelled':
         statusColor = Colors.red;
         break;
       default:
-        statusColor = Colors.orange;
+        statusColor = Color(0xFF38B000);
     }
 
     return Card(
@@ -217,7 +219,7 @@ class AppointmentsScreen extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           gradient: LinearGradient(
-            colors: [Colors.white, Colors.blue.shade50],
+            colors: [Colors.white, Color(0xFF008000).withOpacity(0.1)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

@@ -16,7 +16,7 @@ class GettingStartedScreen extends StatelessWidget {
             end: Alignment.bottomCenter,
             colors: [
               Color.fromARGB(255, 255, 255, 255),
-              Color(0xFF08A8B1).withOpacity(0.8),
+              Color(0xFF00B4D8).withOpacity(0.8),
             ],
           ),
         ),
@@ -74,7 +74,7 @@ class GettingStartedScreen extends StatelessWidget {
                                 builder: (context) => LoginScreen()),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFF19E23),
+                            backgroundColor: Color(0xFF0077B6),
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
@@ -104,7 +104,7 @@ class GettingStartedScreen extends StatelessWidget {
                                 builder: (context) => RegisterScreen()),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFF19E23),
+                            backgroundColor: Color(0xFF0077B6),
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(

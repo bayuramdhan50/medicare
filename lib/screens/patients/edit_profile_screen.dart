@@ -106,7 +106,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       IconButton(
                         icon: Icon(Icons.arrow_back_ios, color: Colors.white),
                         onPressed: () {
-                          Navigator.of(context).pop();
+                          print('Back button pressed');
+                          Navigator.of(context, rootNavigator: true).pop();
                         },
                       ),
                       Text(

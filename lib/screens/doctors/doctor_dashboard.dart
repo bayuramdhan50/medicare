@@ -7,6 +7,7 @@ import 'package:medicare/screens/doctors/lab_results_screen.dart';
 import 'package:medicare/models/user_model.dart';
 import 'package:medicare/screens/doctors/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:medicare/screens/doctors/app_color.dart';
 
 class DoctorDashboard extends StatefulWidget {
   final UserModel user;
@@ -75,8 +76,8 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.green.shade700,
-                  Colors.green.shade500,
+                  Color(0xFF008000), // Hijau tua
+                  Color(0xFF38B000), // Hijau muda
                 ],
               ),
             ),
@@ -308,7 +309,7 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
             label: 'Profile',
           ),
         ],
-        selectedItemColor: Colors.green.shade700,
+        selectedItemColor: Color(0xFF008000),
         unselectedItemColor: Colors.grey,
       ),
     );
@@ -336,17 +337,10 @@ class MenuIcon extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.green.shade50,
+              color: Color(0xFF008000).withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 5,
-                  offset: Offset(0, 2),
-                ),
-              ],
             ),
-            child: Icon(icon, color: Colors.green.shade700, size: 32),
+            child: Icon(icon, color: Color(0xFF008000), size: 32),
           ),
           SizedBox(height: 8),
           Text(
