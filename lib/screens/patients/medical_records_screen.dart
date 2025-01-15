@@ -200,26 +200,6 @@ class MedicalRecordsScreen extends StatelessWidget {
                                     );
                                   },
                                 ),
-                                SizedBox(height: 20),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      // Add functionality to view details
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 15),
-                                    ),
-                                    child: Text('View Details',
-                                        style: TextStyle(
-                                            fontSize: 18, color: Colors.white)),
-                                  ),
-                                ),
                               ],
                             ),
                           ),

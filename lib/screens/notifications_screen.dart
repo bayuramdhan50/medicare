@@ -20,7 +20,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue.shade700,
-        title: Text('Notifikasi'),
+        title: Text('Notifikasi', style: TextStyle(color: Colors.white)),
         elevation: 0,
       ),
       body: StreamBuilder<QuerySnapshot>(

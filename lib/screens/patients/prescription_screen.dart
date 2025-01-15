@@ -202,28 +202,6 @@ class PrescriptionScreen extends StatelessWidget {
                                       prescription['instructions'] ??
                                           'Not specified',
                                     ),
-                                    SizedBox(height: 16),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: ElevatedButton.icon(
-                                        icon: Icon(Icons.remove_red_eye,
-                                            color: Colors.white),
-                                        label: Text('View Details'),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.blue,
-                                          foregroundColor: Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 12),
-                                        ),
-                                        onPressed: () {
-                                          // Add functionality to view details
-                                        },
-                                      ),
-                                    ),
                                   ],
                                 ),
                               ),
