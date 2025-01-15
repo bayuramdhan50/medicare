@@ -7,6 +7,7 @@ import 'admin_profile_screen.dart';
 import 'package:d_chart/d_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:medicare/auth/login_screen.dart';
+import 'package:medicare/screens/admins/user_table_screen.dart';
 
 class AdminDashboard extends StatefulWidget {
   final UserModel user;
@@ -199,16 +200,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ),
           _buildUserChart(),
           SizedBox(height: 24),
-          GridView.count(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
+          Column(
             children: [
-              _buildMenuCard(
+              _buildMenuFlex(
                 'Add Doctor',
                 Icons.medical_services,
+                'Tambah dokter baru ke sistem',
                 () {
                   Navigator.push(
                     context,
@@ -218,15 +215,31 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   );
                 },
               ),
-              _buildMenuCard(
+              SizedBox(height: 12),
+              _buildMenuFlex(
                 'Manage Users',
                 Icons.manage_accounts,
+                'Kelola semua pengguna sistem',
                 () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
                           ManageUsersScreen(user: widget.user),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 12),
+              _buildMenuFlex(
+                'User Tables',
+                Icons.table_chart,
+                'Lihat data pengguna dalam bentuk tabel',
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserTableScreen(),
                     ),
                   );
                 },
@@ -238,46 +251,71 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  Widget _buildMenuCard(String title, IconData icon, VoidCallback onTap) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(15),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                primaryColor,
-                primaryColor.withOpacity(0.8),
-              ],
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 40,
-                color: Colors.white,
-              ),
-              SizedBox(height: 12),
-              Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+  Widget _buildMenuFlex(
+      String title, IconData icon, String description, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              primaryColor.withOpacity(0.1),
+              Colors.white,
             ],
           ),
+          border: Border.all(
+            color: primaryColor.withOpacity(0.3),
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: primaryColor,
+                size: 24,
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: primaryColor,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: primaryColor,
+              size: 16,
+            ),
+          ],
         ),
       ),
     );
