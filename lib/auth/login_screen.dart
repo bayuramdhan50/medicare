@@ -8,6 +8,7 @@ import 'package:medicare/screens/patients/patient_dashboard.dart';
 import 'package:medicare/screens/doctors/doctor_dashboard.dart';
 import 'package:medicare/screens/admins/admin_dashboard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:medicare/services/notification_listener_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,28 +25,31 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> _verifyLogin(BuildContext context) async {
-    String email = emailController.text.trim();
-    String password = passwordController.text.trim();
-
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
       );
 
       String role = await _getUserRole(userCredential.user!.uid);
 
       UserModel loggedInUser = UserModel(
         uid: userCredential.user!.uid,
-        name: userCredential.user!.displayName ?? email.split('@')[0],
-        email: email,
+        name: userCredential.user!.displayName ??
+            emailController.text.split('@')[0],
+        email: emailController.text.trim(),
         role: role,
       );
 
+      // Navigasi dulu, baru inisialisasi notifikasi
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) {
           if (role == 'patient') {
+            // Inisialisasi NotificationListenerService untuk pasien saja
+            Future.delayed(Duration(milliseconds: 500), () {
+              NotificationListenerService.initialize(loggedInUser.uid);
+            });
             return PatientDashboard(user: loggedInUser);
           } else if (role == 'doctor') {
             return DoctorDashboard(user: loggedInUser);
@@ -54,18 +58,14 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         }),
       );
-    } on FirebaseAuthException catch (e) {
-      String message = 'Login Failed';
-      if (e.code == 'user-not-found') {
-        message = 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        message = 'Wrong password provided.';
-      }
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('An error occurred')));
+      print('Login error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

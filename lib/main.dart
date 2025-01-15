@@ -10,13 +10,12 @@ void main() async {
 
   // Inisialisasi Firebase
   await Firebase.initializeApp();
+  // Memastikan layanan notifikasi diinisialisasi
+  await NotificationService.initialize();
 
-  final notificationService = NotificationService();
-  await notificationService.initialize();
-
-  // Listen for notification clicks when app is in background
+  // Mendengarkan klik notifikasi ketika aplikasi berada di latar belakang
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    // Handle notification click
+    // Menangani klik notifikasi
     print('Notification clicked: ${message.data}');
   });
 
