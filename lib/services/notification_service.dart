@@ -4,92 +4,66 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class NotificationService {
-  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications =
+  static final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
+  static bool isInitialized = false;
 
-  Future<void> initialize() async {
-    // Request permission for notifications
-    await _fcm.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+  static Future<void> initialize() async {
+    if (isInitialized) return;
 
-    // Initialize local notifications
-    const initializationSettingsAndroid =
+    const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    final initializationSettingsIOS = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
+
+    final DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
       requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
     );
-    final initializationSettings = InitializationSettings(
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
 
-    await _localNotifications.initialize(initializationSettings);
+    await _notifications.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse details) async {
+        print('Notification clicked');
+      },
+    );
 
-    // Handle background messages
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-    // Handle foreground messages
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      _showNotification(message);
-    });
-
-    // Get and save FCM token
-    _getTokenAndSave();
+    isInitialized = true;
+    print('NotificationService initialized');
   }
 
-  Future<void> _getTokenAndSave() async {
-    String? token = await _fcm.getToken();
-    if (token != null) {
-      print("FCM Token: $token");
-      // Simpan token ke Firestore
-      await saveTokenToFirestore(token);
-    }
-  }
+  static Future<void> showNotification({
+    required String title,
+    required String body,
+  }) async {
+    print('Showing notification: $title - $body');
 
-  Future<void> saveTokenToFirestore(String token) async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      String userId = user.uid;
-      DocumentReference userDoc =
-          FirebaseFirestore.instance.collection('users').doc(userId);
-
-      DocumentSnapshot docSnapshot = await userDoc.get();
-      if (docSnapshot.exists) {
-        await userDoc.update({'fcmToken': token});
-      } else {
-        print("User document does not exist");
-        // Anda bisa membuat dokumen baru jika diperlukan
-        await userDoc.set({'fcmToken': token});
-      }
-    } else {
-      print("User is not logged in");
-    }
-  }
-
-  Future<void> _showNotification(RemoteMessage message) async {
-    const androidDetails = AndroidNotificationDetails(
-      'default_channel',
-      'Default Channel',
-      importance: Importance.high,
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'medicare_channel', // channel Id
+      'Medicare Notifications', // channel Name
+      channelDescription: 'Channel for Medicare app notifications',
+      importance: Importance.max,
       priority: Priority.high,
-    );
-    const iosDetails = DarwinNotificationDetails();
-    const details = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
+      showWhen: true,
+      enableVibration: true,
+      playSound: true,
     );
 
-    await _localNotifications.show(
-      0,
-      message.notification?.title ?? 'Status Update',
-      message.notification?.body,
-      details,
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await _notifications.show(
+      DateTime.now().millisecond,
+      title,
+      body,
+      platformChannelSpecifics,
     );
   }
 }

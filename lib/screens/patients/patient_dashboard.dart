@@ -203,32 +203,97 @@ class _PatientDashboardState extends State<PatientDashboard>
                             ],
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            // Navigate to ProfileScreen when CircleAvatar is tapped
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProfileScreen(
-                                  user: widget
-                                      .user, // Pastikan 'user' sudah terisi dengan data yang valid
-                                  onProfileUpdated: onProfileUpdated,
-                                  onLogout: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
+                        Row(
+                          children: [
+                            // Icon Notifikasi
+                            StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection('notifications')
+                                  .where('userId', isEqualTo: widget.user.uid)
+                                  .where('isRead', isEqualTo: false)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                int unreadCount = snapshot.hasData
+                                    ? snapshot.data!.docs.length
+                                    : 0;
+
+                                return Stack(
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.notifications,
+                                          color: Colors.white),
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
                                             builder: (context) =>
-                                                LoginScreen()));
-                                  }, // Pastikan 'onLogout' sudah terisi
-                                ),
+                                                NotificationsScreen(
+                                                    user: widget.user),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    if (unreadCount > 0)
+                                      Positioned(
+                                        right: 8,
+                                        top: 8,
+                                        child: Container(
+                                          padding: EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                            color: Color(0xFFF19E23),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          constraints: BoxConstraints(
+                                            minWidth: 16,
+                                            minHeight: 16,
+                                          ),
+                                          child: Text(
+                                            '$unreadCount',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              },
+                            ),
+                            SizedBox(
+                                width:
+                                    8), // Spacing antara notifikasi dan profile
+                            // Icon Profile
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ProfileScreen(
+                                      user: widget.user,
+                                      onProfileUpdated: onProfileUpdated,
+                                      onLogout: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    LoginScreen()));
+                                      },
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: Colors.white,
+                                child: Icon(Icons.person,
+                                    color: const Color(0xFF2196F3)),
                               ),
-                            );
-                          },
-                          child: CircleAvatar(
-                            backgroundColor: Colors.white,
-                            child: Icon(Icons.person, color: const Color(0xFF2196F3)),
-                          ),
-                        )
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
