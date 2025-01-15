@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:medicare/models/user_model.dart';
+import 'package:intl/intl.dart';
+import 'package:medicare/screens/notification_detail_screen.dart';
+import 'package:medicare/services/notification_listener_service.dart';
 
 class NotificationsScreen extends StatefulWidget {
   final UserModel user;
@@ -15,6 +18,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blue.shade700,
+        title: Text('Notifikasi'),
+        elevation: 0,
+      ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('notifications')
@@ -22,35 +30,86 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             .orderBy('timestamp', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
-          // Log untuk debugging
-          if (snapshot.hasError) {
-            print('Error fetching notifications: ${snapshot.error}');
-          }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            print('Waiting for data...');
-          }
-          if (snapshot.hasData) {
-            print('Notifications count: ${snapshot.data!.docs.length}');
-            snapshot.data!.docs.forEach((doc) {
-              print('Notification data: ${doc.data()}');
-            });
+            return Center(
+                child: CircularProgressIndicator(
+              color: Colors.blue.shade700,
+            ));
           }
 
-          // Render UI berdasarkan state snapshot
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('No notifications yet'));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.notifications_off,
+                      size: 64, color: Color(0xFFF19E23)),
+                  SizedBox(height: 16),
+                  Text(
+                    'Tidak ada notifikasi',
+                    style: TextStyle(
+                      color: Color(0xFF08A8B1),
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
-          return ListView(
-            children: snapshot.data!.docs.map((doc) {
-              var data = doc.data() as Map<String, dynamic>;
-              return ListTile(
-                title: Text(data['title']),
-                subtitle: Text(data['body']),
+
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              var notification = snapshot.data!.docs[index];
+              var data = notification.data() as Map<String, dynamic>;
+
+              return Card(
+                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.blue.shade700.withOpacity(0.1),
+                    child: Icon(
+                      Icons.notifications,
+                      color: Colors.blue.shade700,
+                    ),
+                  ),
+                  title: Text(
+                    data['title'] ?? '',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue.shade700,
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(data['body'] ?? ''),
+                      SizedBox(height: 4),
+                      Text(
+                        _formatTimestamp(data['timestamp']),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NotificationDetailScreen(
+                          notification: data,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               );
-            }).toList(),
+            },
           );
         },
       ),
@@ -60,13 +119,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   String _formatTimestamp(Timestamp? timestamp) {
     if (timestamp == null) return '';
     DateTime dateTime = timestamp.toDate();
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}';
-  }
-
-  Future<void> _markAsRead(String notificationId) async {
-    await FirebaseFirestore.instance
-        .collection('notifications')
-        .doc(notificationId)
-        .update({'isRead': true});
+    return DateFormat('dd MMM yyyy, HH:mm').format(dateTime);
   }
 }
