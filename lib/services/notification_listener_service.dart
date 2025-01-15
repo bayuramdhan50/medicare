@@ -31,15 +31,28 @@ class NotificationListenerService {
     Timestamp timestamp = data['timestamp'] as Timestamp;
     DateTime notificationTime = timestamp.toDate();
 
+    // Pastikan hanya notifikasi yang belum dibaca yang diproses
     if (!_processedNotifications.contains(doc.id) &&
         notificationTime.isAfter(_lastCheckTime) &&
         !(data['isRead'] ?? false)) {
-      _processedNotifications.add(doc.id);
+      _processedNotifications.add(doc.id); // Tandai notifikasi sudah diproses
+
+      // Tampilkan notifikasi
       NotificationService.showNotification(
-        title: data['title'] ?? '',
-        body: data['body'] ?? '',
+        title: data['title'] ?? 'New Notification',
+        body: data['body'] ?? 'You have a new message.',
       );
       print('New notification shown: ${data['title']}');
+
+      // Tandai notifikasi sebagai sudah dibaca setelah ditampilkan
+      FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(doc.id)
+          .update({'isRead': true}).then((_) {
+        print('Notification marked as read: ${data['title']}');
+      }).catchError((error) {
+        print('Error updating notification: $error');
+      });
     }
   }
 

@@ -8,6 +8,7 @@ import 'package:d_chart/d_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:medicare/auth/login_screen.dart';
 import 'package:medicare/screens/admins/user_table_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AdminDashboard extends StatefulWidget {
   final UserModel user;
@@ -178,7 +179,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              onPressed: () {
+                              onPressed: () async {
+                                await FirebaseAuth.instance.signOut();
                                 // Implementasi logout
                                 Navigator.pushAndRemoveUntil(
                                   context,

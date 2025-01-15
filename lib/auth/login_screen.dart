@@ -41,22 +41,22 @@ class _LoginScreenState extends State<LoginScreen> {
         role: role,
       );
 
-      // Navigasi dulu, baru inisialisasi notifikasi
-      Navigator.pushReplacement(
+      Widget nextScreen;
+      if (role == 'patient') {
+        Future.delayed(Duration(milliseconds: 500), () {
+          NotificationListenerService.initialize(loggedInUser.uid);
+        });
+        nextScreen = PatientDashboard(user: loggedInUser);
+      } else if (role == 'doctor') {
+        nextScreen = DoctorDashboard(user: loggedInUser);
+      } else {
+        nextScreen = AdminDashboard(user: loggedInUser);
+      }
+
+      Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) {
-          if (role == 'patient') {
-            // Inisialisasi NotificationListenerService untuk pasien saja
-            Future.delayed(Duration(milliseconds: 500), () {
-              NotificationListenerService.initialize(loggedInUser.uid);
-            });
-            return PatientDashboard(user: loggedInUser);
-          } else if (role == 'doctor') {
-            return DoctorDashboard(user: loggedInUser);
-          } else {
-            return AdminDashboard(user: loggedInUser);
-          }
-        }),
+        MaterialPageRoute(builder: (context) => nextScreen),
+        (Route<dynamic> route) => false, // Hapus semua layar sebelumnya
       );
     } catch (e) {
       print('Login error: $e');

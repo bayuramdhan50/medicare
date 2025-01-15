@@ -15,6 +15,26 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
+  // Fungsi untuk menghapus notifikasi
+  Future<void> _deleteNotification(String notificationId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(notificationId)
+          .delete();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Notifikasi berhasil dihapus'),
+        backgroundColor: Colors.green,
+      ));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Gagal menghapus notifikasi'),
+        backgroundColor: Colors.red,
+      ));
+      print("Error deleting notification: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,6 +116,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         ),
                       ),
                     ],
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      _deleteNotification(
+                          notification.id); // Menghapus notifikasi
+                    },
                   ),
                   onTap: () {
                     Navigator.push(

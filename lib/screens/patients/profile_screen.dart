@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:medicare/models/user_model.dart';
 import 'edit_profile_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileScreen extends StatefulWidget {
   final UserModel user;
@@ -402,7 +403,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                           15),
                                                             ),
                                                           ),
-                                                          onPressed: () {
+                                                          onPressed: () async {
+                                                            await FirebaseAuth
+                                                                .instance
+                                                                .signOut();
                                                             Navigator.of(
                                                                     context)
                                                                 .pop();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medicare/models/user_model.dart';
 import 'package:medicare/auth/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileScreen extends StatelessWidget {
   final UserModel user;
@@ -58,9 +59,11 @@ class ProfileScreen extends StatelessWidget {
                           'Logout',
                           style: TextStyle(color: Colors.red),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
                           Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(builder: (context) => LoginScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => LoginScreen()),
                             (Route<dynamic> route) => false,
                           );
                         },
