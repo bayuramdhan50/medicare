@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:medicare/models/user_model.dart';
 import 'edit_profile_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   final UserModel user;
@@ -155,6 +156,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     offset: Offset(0, 1),
                                   ),
                                 ],
+                              ),
+                            ),
+                            SizedBox(height: 20),
+
+                            // Tambahkan Tutorial Video Button
+                            SizedBox(
+                              width:
+                                  200, // Ukuran lebih kecil agar sesuai di header
+                              height: 45,
+                              child: ElevatedButton.icon(
+                                icon: Icon(Icons.play_circle_fill,
+                                    color: Colors.white),
+                                label: Text('Tutorial Aplikasi',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    )),
+                                onPressed: () async {
+                                  const url =
+                                      'https://youtu.be/d9n6nwyDPX0';
+                                  if (await canLaunch(url)) {
+                                    await launch(url);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Tidak dapat membuka video tutorial'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 34, 174, 255),
+                                  elevation: 3,
+                                  shadowColor: Colors.green.withOpacity(0.3),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
                               ),
                             ),
                           ],

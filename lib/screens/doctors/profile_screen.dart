@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:medicare/models/user_model.dart';
 import 'package:medicare/auth/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatelessWidget {
   final UserModel user;
@@ -161,6 +162,44 @@ class ProfileScreen extends StatelessWidget {
                         fontSize: 18,
                         color: Colors.white.withOpacity(0.9),
                         fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+
+                    // Tambah Tutorial Video Button
+                    SizedBox(
+                      width: 200,
+                      height: 45,
+                      child: ElevatedButton.icon(
+                        icon: Icon(Icons.play_circle_fill, color: Colors.white),
+                        label: Text('Tutorial Aplikasi',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            )),
+                        onPressed: () async {
+                          const url = 'https://youtu.be/d9n6nwyDPX0';
+                          if (await canLaunch(url)) {
+                            await launch(url);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content:
+                                    Text('Tidak dapat membuka video tutorial'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[600],
+                          elevation: 3,
+                          shadowColor: Colors.green.withOpacity(0.3),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(height: 16),

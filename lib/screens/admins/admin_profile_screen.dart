@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AdminProfileScreen extends StatelessWidget {
   const AdminProfileScreen({Key? key}) : super(key: key);
@@ -65,6 +66,41 @@ class AdminProfileScreen extends StatelessWidget {
                   style: TextStyle(
                     color: secondaryColor,
                     fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 16),
+                SizedBox(
+                  width: 200,
+                  height: 45,
+                  child: ElevatedButton.icon(
+                    icon: Icon(Icons.play_circle_fill, color: Colors.white),
+                    label: Text('Tutorial Aplikasi',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        )),
+                    onPressed: () async {
+                      const url = 'https://youtu.be/d9n6nwyDPX0';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Tidak dapat membuka video tutorial'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 184, 187, 14),
+                      elevation: 3,
+                      shadowColor: Colors.green.withOpacity(0.3),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
                   ),
                 ),
               ],
